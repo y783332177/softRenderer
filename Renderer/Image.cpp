@@ -7,8 +7,13 @@ Color::Color()
 {
 }
 
-Color::Color(float r, float g, float b)
-	: r(r), g(g), b(b)
+Color::Color(char _r, char _g, char _b)
+	: r(_r / 255), g(_g / 255), b(_b / 255)
+{
+}
+
+Color::Color(float _r, float _g, float _b)
+	: r(_r), g(_g), b(_b)
 {
 }
 
@@ -17,7 +22,7 @@ Color::~Color()
 }
 
 Image::Image(int width, int height)
-	: m_width(width), m_height(height), m_colors(std::vector<Color>(width* height))
+	: m_width(width), m_height(height), area(width * height), m_colors(std::vector<Color>(width* height))
 {
 }
 
@@ -35,6 +40,26 @@ void Image::SetColor(const Color& color, int x, int y)
 	m_colors[y * m_width + x].r = color.r;
 	m_colors[y * m_width + x].g = color.g;
 	m_colors[y * m_width + x].b = color.b;
+}
+/// <summary>
+/// get the backbuffer and write it to bmp buffer
+/// </summary>
+/// <param name="buffer"></param>
+void Image::WriteBmp(std::vector<char>& buffer)
+{
+	if (area * 4 != buffer.size())
+	{
+		std::cout << "[Image WriteBmp]: wrong buffer size, buffer size should be 4 * area!\n";
+		return;
+	}
+	for (int y = 0; y < m_height; y++)
+	{
+		for (int x = 0; x < m_width; x++)
+		{
+			int offset = (y * m_width + x) * 4;
+			SetColor(Color(buffer[offset], buffer[offset + 1], buffer[offset + 2]), x, y);
+		}
+	}
 }
 
 void Image::Export(const char* path)
