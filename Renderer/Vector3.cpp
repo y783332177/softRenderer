@@ -35,14 +35,14 @@ Vector3 Vector3::operator / (const float value) const
 	}
 	return Vector3();
 }
-Vector3& Vector3::operator += (const Vector3& other)
+Vector3& Vector3::operator -= (const Vector3& other)
 {
 	x -= other.x;
 	y -= other.y;
 	z -= other.z;
 	return *this;
 }
-Vector3& Vector3::operator -= (const Vector3& other)
+Vector3& Vector3::operator += (const Vector3& other)
 {
 	x += other.x;
 	y += other.y;
@@ -58,9 +58,9 @@ Vector3& Vector3::operator *= (const float value)
 }
 Vector3& Vector3::operator /= (const float value)
 {
-	x *= value;
-	y *= value;
-	z *= value;
+	x /= value;
+	y /= value;
+	z /= value;
 	return *this;
 }
 Vector3& Vector3::operator = (const Vector3 other)
