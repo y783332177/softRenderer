@@ -8,7 +8,7 @@ Color::Color()
 }
 
 Color::Color(char _r, char _g, char _b)
-	: r(_r / 255), g(_g / 255), b(_b / 255)
+	: r((float)_r / 255.0f), g((float)_g / 255.0f), b((char)_b / 255.0f)
 {
 }
 

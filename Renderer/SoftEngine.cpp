@@ -63,7 +63,7 @@ Deivce::Deivce(Image& _bmp)
 
 void Deivce::Clear(char r, char g, char b, char a)
 {
-	for (int index = 0; index < backBuffer.size(); index++)
+	for (int index = 0; index < backBuffer.size(); index += 4)
 	{
 		backBuffer[index] = r;
 		backBuffer[index + 1] = g;
