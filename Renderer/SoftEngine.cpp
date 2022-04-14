@@ -55,13 +55,13 @@ Mesh::~Mesh()
 {
 }
 
-Deivce::Deivce(Image& _bmp)
+Device::Device(Image& _bmp)
 	: bmp(_bmp)
 {
 	backBuffer = std::vector<char>(bmp.GetWidth() * bmp.GetHeight() * 4);
 }
 
-void Deivce::Clear(char r, char g, char b, char a)
+void Device::Clear(char r, char g, char b, char a)
 {
 	for (int index = 0; index < backBuffer.size(); index += 4)
 	{
@@ -72,13 +72,13 @@ void Deivce::Clear(char r, char g, char b, char a)
 	}
 }
 
-void Deivce::Present()
+void Device::Present()
 {
 	bmp.WriteBmp(backBuffer);
 	bmp.Export("default.bmp");
 }
 
-void Deivce::PutPixel(int x, int y, Color color)
+void Device::PutPixel(int x, int y, Color color)
 {
 	int offset = (x + y * bmp.GetWidth()) * 4;
 
@@ -88,6 +88,6 @@ void Deivce::PutPixel(int x, int y, Color color)
 	backBuffer[offset + 3] = 255; // bmp do not have alpha, but other ways for showing would use it
 }
 
-Deivce::~Deivce()
+Device::~Device()
 {
 }

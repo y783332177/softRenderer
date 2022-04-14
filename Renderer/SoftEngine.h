@@ -42,10 +42,10 @@ private:
 	Vector3f rotation;
 };
 
-class Deivce
+class Device
 {
 public:
-	Deivce(Image& _bmp);
+	Device(Image& _bmp);
 	void Clear(char r, char g, char b, char a);
 	void Present();
 	void PutPixel(int x, int y, Color color);
@@ -54,7 +54,7 @@ public:
 	//void DrawPoint(Vector2 point);
 	//void Render(Camera, vector<Mesh> meshes);
 
-	~Deivce();
+	~Device();
 
 private:
 	std::vector<char> backBuffer;
