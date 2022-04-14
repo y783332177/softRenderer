@@ -47,7 +47,7 @@ template<size_t ROW, size_t COL, typename T> struct Matrix {
 	}
 
 	// …Ë÷√“ª¡–
-	inline void SetRow(size_t col, const Vector<ROW, T>& a) {
+	inline void SetCol(size_t col, const Vector<ROW, T>& a) {
 		assert(col < COL);
 		for (size_t i = 0; i < ROW; i++) m[i][col] = a[i];
 	}
