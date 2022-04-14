@@ -98,7 +98,6 @@ Vector2f Device::Project(Vector3f coord, Mat4x4f transMat)
 {
 	// transforming the coordinates
 	Vector4f point = TransformCoordinate(coord.xyz1(), transMat);
-	std::cout << point << std::endl;
 	float x = point.x * bmp.GetWidth() / 2.0f + bmp.GetWidth() / 2.0f;
 	float y = point.y * bmp.GetHeight() / 2.0f + bmp.GetHeight() / 2.0f;
 	return (Vector2f(x, y));
@@ -116,21 +115,17 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 {
 	// MVP matrix first
 	auto viewMatrix = LookAtRH(camera.GetPosition(), camera.GetTarget(), Vector3f(0.0f, 1.0f, 0.0f));
-	std::cout << viewMatrix << std::endl;
-	auto projectionMatrix = PerspectiveFovRH(2.5f, (float)bmp.GetWidth() / bmp.GetHeight(), 0.5f, 20.0f);
-	std::cout << projectionMatrix << std::endl;
+	auto projectionMatrix = PerspectiveFovRH(1.4f, (float)bmp.GetWidth() / bmp.GetHeight(), 0.5f, 20.0f);
 
 	for (Mesh mesh : meshes)
 	{
 		auto meshRotation = mesh.GetRotation();
 		auto worldMatrix =  RotationPitch(meshRotation[0]) * RotationYaw(meshRotation[1]) * RotationRoll(meshRotation[2]) * Translation(mesh.GetPosition());
 		auto transformMatrix = projectionMatrix * viewMatrix * worldMatrix;
-		std::cout << worldMatrix << std::endl;
 
 		for (auto& vertex : mesh.GetVertices())
 		{
 			auto point = Project(vertex, transformMatrix);
-			std::cout << point << std::endl;
 			DrawPoint(point);
 		}
 	}
