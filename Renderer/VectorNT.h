@@ -188,7 +188,7 @@ struct Vector<4, T>
 		if (i >= 4)
 		{
 			std::cout << "error: Vector4 out of bounds" << std::endl;
-			return 0;
+			return m[3];
 		}
 		return m[i];
 	}
