@@ -316,7 +316,7 @@ inline Mat4x4f PerspectiveFovRH(float fovy, float Aspect, float zn, float zf)
 	return projectionMatrix;
 }
 
-inline Mat4x4f Translation(Vector3f& transVec)
+inline Mat4x4f Translation(const Vector3f& transVec)
 {
 	Mat4x4f translationMatrix;
 	translationMatrix.SetCol(0, Vector4f(1, 0, 0, transVec.x));
