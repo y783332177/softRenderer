@@ -309,7 +309,7 @@ inline Mat4x4f LookAtRH(Vector3f cameraPos, Vector3f cameraTar, Vector3f upVec)
 inline Mat4x4f PerspectiveFovRH(const float fovy, const float Aspect, const float zn, const float zf)
 {
 	Mat4x4f projectionMatrix;
-	projectionMatrix.SetRow(0, Vector4f(1 / tanf(fovy / 2), 0, 0, 0));
+	projectionMatrix.SetRow(0, Vector4f(1. / tanf(fovy / 2), 0, 0, 0));
 	projectionMatrix.SetRow(1, Vector4f(0, Aspect / tanf(fovy / 2), 0, 0));
 	projectionMatrix.SetRow(2, Vector4f(0, 0, (zf + zn) / (zn - zf), 2 * zf * zn / (zf - zn)));
 	projectionMatrix.SetRow(3, Vector4f(0, 0, 1, 0));

@@ -25,12 +25,16 @@ Mesh::Mesh()
 	: name("default")
 {
 	vertices = std::vector<Vector3f>(0);
+	SetPosition(Vector3f(0., 0., 0.));
+	SetRotation(Vector3f(0., 0., 0.));
 }
 
 Mesh::Mesh(const std::string& _name, int verticesCount)
 	: name(_name)
 {
 	vertices = std::vector<Vector3f>(verticesCount);
+	SetPosition(Vector3f(0., 0., 0.));
+	SetRotation(Vector3f(0., 0., 0.));
 }
 
 Vector3f Mesh::GetVertice(int index) const
@@ -94,7 +98,7 @@ Vector2f Device::Project(Vector3f coord, Mat4x4f transMat)
 {
 	// transforming the coordinates
 	Vector4f point = TransformCoordinate(coord.xyz1(), transMat);
-	
+	std::cout << point << std::endl;
 	float x = point.x * bmp.GetWidth() / 2.0f + bmp.GetWidth() / 2.0f;
 	float y = point.y * bmp.GetHeight() / 2.0f + bmp.GetHeight() / 2.0f;
 	return (Vector2f(x, y));
@@ -104,7 +108,7 @@ void Device::DrawPoint(Vector2f point)
 {
 	if (point.x >= 0 && point.y >= 0 && point.x < bmp.GetWidth() && point.y < bmp.GetHeight())
 	{
-		PutPixel((int)point.x, (int)point.y, Color(1.0f, 1.0f, 0.0f));
+		PutPixel((int)point.x, (int)point.y, Color(1.0f, 1.0f, 1.0f));
 	}
 }
 
@@ -112,17 +116,21 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 {
 	// MVP matrix first
 	auto viewMatrix = LookAtRH(camera.GetPosition(), camera.GetTarget(), Vector3f(0.0f, 1.0f, 0.0f));
-	auto projectionMatrix = PerspectiveFovRH(0.78f, (float)bmp.GetWidth() / bmp.GetHeight(), 0.01f, 1.0f);
+	std::cout << viewMatrix << std::endl;
+	auto projectionMatrix = PerspectiveFovRH(2.5f, (float)bmp.GetWidth() / bmp.GetHeight(), 0.5f, 20.0f);
+	std::cout << projectionMatrix << std::endl;
 
 	for (Mesh mesh : meshes)
 	{
 		auto meshRotation = mesh.GetRotation();
 		auto worldMatrix =  RotationPitch(meshRotation[0]) * RotationYaw(meshRotation[1]) * RotationRoll(meshRotation[2]) * Translation(mesh.GetPosition());
 		auto transformMatrix = projectionMatrix * viewMatrix * worldMatrix;
+		std::cout << worldMatrix << std::endl;
 
 		for (auto& vertex : mesh.GetVertices())
 		{
 			auto point = Project(vertex, transformMatrix);
+			std::cout << point << std::endl;
 			DrawPoint(point);
 		}
 	}
