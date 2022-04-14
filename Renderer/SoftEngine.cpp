@@ -116,7 +116,9 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 
 	for (Mesh mesh : meshes)
 	{
-		auto worldMatrix = Mat4x4f();
+		auto meshRotation = mesh.GetRotation();
+		auto meshPosition = mesh.GetPosition();
+		auto worldMatrix = RotationYaw(meshRotation[1]) * RotationPitch(meshRotation[0]) * RotationRoll(meshRotation[2]) * Translation(meshPosition);
 		//auto transformMatrix = projectionMatrix * viewMatrix * worldMatrix;
 
 		for (auto& vertex : mesh.GetVertices())

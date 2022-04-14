@@ -326,4 +326,32 @@ inline Mat4x4f Translation(Vector3f& transVec)
 
 	return translationMatrix;
 }
+
+inline Mat4x4f RotationYaw(float yaw) 
+{
+	Mat4x4f roYaw;
+	roYaw.SetCol(0, Vector4f(cosf(yaw), 0, sinf(yaw), 0));
+	roYaw.SetCol(1, Vector4f(0, 1, 0, 0));
+	roYaw.SetCol(2, Vector4f(-sinf(yaw), 0, cosf(yaw), 0));
+	roYaw.SetCol(3, Vector4f(0, 0, 0, 1));
+	return roYaw;
+}
+inline Mat4x4f RotationPitch(float pitch)
+{
+	Mat4x4f roPitch;
+	roPitch.SetCol(0, Vector4f(1, 0, 0, 0));
+	roPitch.SetCol(1, Vector4f(0, cosf(pitch), -sinf(pitch), 0));
+	roPitch.SetCol(2, Vector4f(0, sinf(pitch), cosf(pitch), 0));
+	roPitch.SetCol(3, Vector4f(0, 0, 0, 1));
+	return roPitch;
+}
+inline Mat4x4f RotationRoll(float roll)
+{
+	Mat4x4f roRoll;
+	roRoll.SetCol(0, Vector4f(cosf(roll), -sinf(roll), 0, 0));
+	roRoll.SetCol(1, Vector4f(sinf(roll), cosf(roll), 0, 0));
+	roRoll.SetCol(2, Vector4f(0, 0, 1, 0));
+	roRoll.SetCol(3, Vector4f(0, 0, 0, 1));
+	return roRoll;
+}
 #endif
