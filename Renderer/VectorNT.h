@@ -368,5 +368,8 @@ typedef Vector<4, float> Vector4f;
 typedef Vector<4, double> Vector4d;
 typedef Vector<4, int> Vector4i;
 
+typedef Vector<2, float> Vector2;
+typedef Vector<3, float> Vector3;
+typedef Vector<4, float> Vector4;
 
 #endif

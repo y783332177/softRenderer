@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "Vector3.h"
+#include "VectorNT.h"
 #include "Image.h"
 class Camera
 {

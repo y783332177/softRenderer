@@ -140,12 +140,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Image.h" />
+    <ClInclude Include="Matrix.h" />
     <ClInclude Include="SoftEngine.h" />
     <ClInclude Include="Vector3.h" />
+    <ClInclude Include="VectorNT.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="SoftEngine.cpp" />
     <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
