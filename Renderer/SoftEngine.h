@@ -50,8 +50,7 @@ public:
 	void Present();
 	void PutPixel(int x, int y, Color color);
 	//void Project(Vector3f coord, Matrix transMat);
-	// DrawPoint calls PutPixel but does the clipping operation before
-	//void DrawPoint(Vector2 point);
+	void DrawPoint(Vector2f point);
 	//void Render(Camera, vector<Mesh> meshes);
 
 	~Device();

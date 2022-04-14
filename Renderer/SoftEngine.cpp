@@ -88,6 +88,14 @@ void Device::PutPixel(int x, int y, Color color)
 	backBuffer[offset + 3] = 255; // bmp do not have alpha, but other ways for showing would use it
 }
 
+void Device::DrawPoint(Vector2f point)
+{
+	if (point.x >= 0 && point.y >= 0 && point.x < bmp.GetWidth() && point.y < bmp.GetHeight())
+	{
+		PutPixel((int)point.x, (int)point.y, Color(1.0f, 1.0f, 0.0f));
+	}
+}
+
 Device::~Device()
 {
 }
