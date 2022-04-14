@@ -90,13 +90,13 @@ void Device::PutPixel(int x, int y, Color color)
 	backBuffer[offset + 3] = 255; // bmp do not have alpha, but other ways for showing would use it
 }
 
-Vector2f Device::Project(Vector3f coord, Mat3x3f transMat)
+Vector2f Device::Project(Vector3f coord, Mat4x4f transMat)
 {
 	// transforming the coordinates
-	Vector3f point = TransformCoordinate(coord, transMat);
+	Vector4f point = TransformCoordinate(coord.xyz1(), transMat);
 	
-	float x = point.x * bmp.GetWidth() + bmp.GetWidth() / 2.0f;
-	float y = -point.y * bmp.GetHeight() + bmp.GetHeight() / 2.0f;
+	float x = point.x * bmp.GetWidth() / 2.0f + bmp.GetWidth() / 2.0f;
+	float y = point.y * bmp.GetHeight() / 2.0f + bmp.GetHeight() / 2.0f;
 	return (Vector2f(x, y));
 }
 

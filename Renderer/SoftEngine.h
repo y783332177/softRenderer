@@ -51,7 +51,7 @@ public:
 	void Clear(char r, char g, char b, char a);
 	void Present();
 	void PutPixel(int x, int y, Color color);
-	Vector2f Project(Vector3f coord, Mat3x3f transMat);
+	Vector2f Project(Vector3f coord, Mat4x4f transMat);
 	void DrawPoint(Vector2f point);
 	void Render(Camera camera, std::vector<Mesh> meshes);
 
