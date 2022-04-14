@@ -47,7 +47,7 @@ template<size_t ROW, size_t COL, typename T> struct Matrix {
 	}
 
 	// …Ë÷√“ª¡–
-	inline void SetCol(size_t col, const Vector<ROW, T>& a) {
+	inline void SetRow(size_t col, const Vector<ROW, T>& a) {
 		assert(col < COL);
 		for (size_t i = 0; i < ROW; i++) m[i][col] = a[i];
 	}
@@ -298,10 +298,10 @@ inline Mat4x4f LookAtRH(Vector3f cameraPos, Vector3f cameraTar, Vector3f upVec)
 	Vector3f cameraUp = vector_cross(cameraDir, cameraRight);
 
 	Mat4x4f lookAt;
-	lookAt.SetCol(0, Vector4f(cameraRight.x, cameraRight.y, cameraRight.z, -vector_dot(cameraPos, cameraRight)));
-	lookAt.SetCol(1, Vector4f(cameraUp.x, cameraUp.y, cameraUp.z, -vector_dot(cameraPos, cameraUp)));
-	lookAt.SetCol(2, Vector4f(cameraDir.x, cameraDir.y, cameraDir.z, -vector_dot(cameraPos, cameraDir)));
-	lookAt.SetCol(3, Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
+	lookAt.SetRow(0, Vector4f(cameraRight.x, cameraRight.y, cameraRight.z, -vector_dot(cameraPos, cameraRight)));
+	lookAt.SetRow(1, Vector4f(cameraUp.x, cameraUp.y, cameraUp.z, -vector_dot(cameraPos, cameraUp)));
+	lookAt.SetRow(2, Vector4f(cameraDir.x, cameraDir.y, cameraDir.z, -vector_dot(cameraPos, cameraDir)));
+	lookAt.SetRow(3, Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
 
 	return lookAt;
 }
@@ -309,20 +309,20 @@ inline Mat4x4f LookAtRH(Vector3f cameraPos, Vector3f cameraTar, Vector3f upVec)
 inline Mat4x4f PerspectiveFovRH(const float fovy, const float Aspect, const float zn, const float zf)
 {
 	Mat4x4f projectionMatrix;
-	projectionMatrix.SetCol(0, Vector4f(1 / tanf(fovy / 2), 0, 0, 0));
-	projectionMatrix.SetCol(1, Vector4f(0, Aspect / tanf(fovy / 2), 0, 0));
-	projectionMatrix.SetCol(2, Vector4f(0, 0, (zf + zn) / (zn - zf), 2 * zf * zn / (zf - zn)));
-	projectionMatrix.SetCol(3, Vector4f(0, 0, 1, 0));
+	projectionMatrix.SetRow(0, Vector4f(1 / tanf(fovy / 2), 0, 0, 0));
+	projectionMatrix.SetRow(1, Vector4f(0, Aspect / tanf(fovy / 2), 0, 0));
+	projectionMatrix.SetRow(2, Vector4f(0, 0, (zf + zn) / (zn - zf), 2 * zf * zn / (zf - zn)));
+	projectionMatrix.SetRow(3, Vector4f(0, 0, 1, 0));
 	return projectionMatrix;
 }
 
 inline Mat4x4f Translation(const Vector3f& transVec)
 {
 	Mat4x4f translationMatrix;
-	translationMatrix.SetCol(0, Vector4f(1, 0, 0, transVec.x));
-	translationMatrix.SetCol(1, Vector4f(0, 1, 0, transVec.y));
-	translationMatrix.SetCol(2, Vector4f(0, 0, 1, transVec.z));
-	translationMatrix.SetCol(3, Vector4f(0, 0, 0, 1));
+	translationMatrix.SetRow(0, Vector4f(1, 0, 0, transVec.x));
+	translationMatrix.SetRow(1, Vector4f(0, 1, 0, transVec.y));
+	translationMatrix.SetRow(2, Vector4f(0, 0, 1, transVec.z));
+	translationMatrix.SetRow(3, Vector4f(0, 0, 0, 1));
 
 	return translationMatrix;
 }
@@ -330,28 +330,28 @@ inline Mat4x4f Translation(const Vector3f& transVec)
 inline Mat4x4f RotationYaw(const float yaw) 
 {
 	Mat4x4f roYaw;
-	roYaw.SetCol(0, Vector4f(cosf(yaw), 0, sinf(yaw), 0));
-	roYaw.SetCol(1, Vector4f(0, 1, 0, 0));
-	roYaw.SetCol(2, Vector4f(-sinf(yaw), 0, cosf(yaw), 0));
-	roYaw.SetCol(3, Vector4f(0, 0, 0, 1));
+	roYaw.SetRow(0, Vector4f(cosf(yaw), 0, sinf(yaw), 0));
+	roYaw.SetRow(1, Vector4f(0, 1, 0, 0));
+	roYaw.SetRow(2, Vector4f(-sinf(yaw), 0, cosf(yaw), 0));
+	roYaw.SetRow(3, Vector4f(0, 0, 0, 1));
 	return roYaw;
 }
 inline Mat4x4f RotationPitch(const float pitch)
 {
 	Mat4x4f roPitch;
-	roPitch.SetCol(0, Vector4f(1, 0, 0, 0));
-	roPitch.SetCol(1, Vector4f(0, cosf(pitch), -sinf(pitch), 0));
-	roPitch.SetCol(2, Vector4f(0, sinf(pitch), cosf(pitch), 0));
-	roPitch.SetCol(3, Vector4f(0, 0, 0, 1));
+	roPitch.SetRow(0, Vector4f(1, 0, 0, 0));
+	roPitch.SetRow(1, Vector4f(0, cosf(pitch), -sinf(pitch), 0));
+	roPitch.SetRow(2, Vector4f(0, sinf(pitch), cosf(pitch), 0));
+	roPitch.SetRow(3, Vector4f(0, 0, 0, 1));
 	return roPitch;
 }
 inline Mat4x4f RotationRoll(const float roll)
 {
 	Mat4x4f roRoll;
-	roRoll.SetCol(0, Vector4f(cosf(roll), -sinf(roll), 0, 0));
-	roRoll.SetCol(1, Vector4f(sinf(roll), cosf(roll), 0, 0));
-	roRoll.SetCol(2, Vector4f(0, 0, 1, 0));
-	roRoll.SetCol(3, Vector4f(0, 0, 0, 1));
+	roRoll.SetRow(0, Vector4f(cosf(roll), -sinf(roll), 0, 0));
+	roRoll.SetRow(1, Vector4f(sinf(roll), cosf(roll), 0, 0));
+	roRoll.SetRow(2, Vector4f(0, 0, 1, 0));
+	roRoll.SetRow(3, Vector4f(0, 0, 0, 1));
 	return roRoll;
 }
 #endif
