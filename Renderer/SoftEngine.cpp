@@ -33,7 +33,7 @@ Mesh::Mesh(const std::string& _name, int verticesCount)
 	vertices = std::vector<Vector3f>(verticesCount);
 }
 
-Vector3f Mesh::GetVertices(int index) const
+Vector3f Mesh::GetVertice(int index) const
 {
 	if (index >= vertices.size() || index < 0)
 	{
@@ -105,6 +105,25 @@ void Device::DrawPoint(Vector2f point)
 	if (point.x >= 0 && point.y >= 0 && point.x < bmp.GetWidth() && point.y < bmp.GetHeight())
 	{
 		PutPixel((int)point.x, (int)point.y, Color(1.0f, 1.0f, 0.0f));
+	}
+}
+
+void Device::Render(Camera camera, std::vector<Mesh> meshes)
+{
+	// MVP matrix first
+	auto viewMatrix = LookAtRH(camera.GetPosition(), camera.GetTarget(), Vector3f(0.0f, 1.0f, 0.0f));
+	auto projectionMatrix = Mat4x4f();
+
+	for (Mesh mesh : meshes)
+	{
+		auto worldMatrix = Mat4x4f();
+		//auto transformMatrix = projectionMatrix * viewMatrix * worldMatrix;
+
+		for (auto& vertex : mesh.GetVertices())
+		{
+			//auto point = Project(vertex, transformMatrix);
+			//DrawPoint(point);
+		}
 	}
 }
 

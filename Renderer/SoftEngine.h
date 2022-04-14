@@ -29,7 +29,8 @@ public:
 	std::string GetName() const { return name; };
 	Vector3f GetPosition() const { return position; };
 	Vector3f GetRotation() const { return rotation; };
-	Vector3f GetVertices(int index) const;
+	Vector3f GetVertice(int index) const;
+	const std::vector<Vector3f> GetVertices() const { return vertices; };
 	void SetName(const std::string& _name) { name = _name; };
 	void SetPosition(const Vector3f& _position) { position = _position; };
 	void SetTarget(const Vector3f& _rotation) { rotation = _rotation; };
@@ -52,7 +53,7 @@ public:
 	void PutPixel(int x, int y, Color color);
 	Vector2f Project(Vector3f coord, Mat3x3f transMat);
 	void DrawPoint(Vector2f point);
-	//void Render(Camera, vector<Mesh> meshes);
+	void Render(Camera camera, std::vector<Mesh> meshes);
 
 	~Device();
 
