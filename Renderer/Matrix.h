@@ -285,10 +285,25 @@ inline Vector<N, T> TransformCoordinate(Vector<N, T> coord, Matrix<N, N, T> tran
 }
 
 
-
 typedef Matrix<4, 4, float> Mat4x4f;
 typedef Matrix<3, 3, float> Mat3x3f;
 typedef Matrix<4, 3, float> Mat4x3f;
 typedef Matrix<3, 4, float> Mat3x4f;
+
+
+inline Mat4x4f LookAt(Vector3f cameraPos, Vector3f cameraTar, Vector3f upVec)
+{
+	Vector3f cameraDir = vector_normalize(cameraPos - cameraTar);
+	Vector3f cameraRight = vector_normalize(vector_cross(upVec, cameraDir));
+	Vector3f cameraUp = vector_cross(cameraDir, cameraRight);
+
+	Mat4x4f lookAt;
+	lookAt.SetCol(0, Vector4f(cameraRight.x, cameraRight.y, cameraRight.z, -vector_dot(cameraPos, cameraRight)));
+	lookAt.SetCol(1, Vector4f(cameraUp.x, cameraUp.y, cameraUp.z, -vector_dot(cameraPos, cameraUp)));
+	lookAt.SetCol(2, Vector4f(cameraDir.x, cameraDir.y, cameraDir.z, -vector_dot(cameraPos, cameraDir)));
+	lookAt.SetCol(3, Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
+
+	return lookAt;
+}
 
 #endif
