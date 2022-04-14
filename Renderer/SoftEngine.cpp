@@ -112,7 +112,7 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 {
 	// MVP matrix first
 	auto viewMatrix = LookAtRH(camera.GetPosition(), camera.GetTarget(), Vector3f(0.0f, 1.0f, 0.0f));
-	auto projectionMatrix = Mat4x4f();
+	auto projectionMatrix = PerspectiveFovRH(0.78f, (float)bmp.GetWidth() / bmp.GetHeight(), 0.01f, 1.0f);
 
 	for (Mesh mesh : meshes)
 	{
