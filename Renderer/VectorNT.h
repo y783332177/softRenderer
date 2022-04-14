@@ -7,6 +7,7 @@
 #include<map>
 #include<initializer_list>
 #include<iostream>
+#include<assert.h>
 
 // 通用矢量：N 是矢量维度，T 为数据类型
 template <size_t N, typename T>
@@ -371,5 +372,149 @@ typedef Vector<4, int> Vector4i;
 typedef Vector<2, float> Vector2;
 typedef Vector<3, float> Vector3;
 typedef Vector<4, float> Vector4;
+
+//---------------------------------------------------------------------
+// 数学库：矢量函数
+//---------------------------------------------------------------------
+
+// 不同维度的矢量转换
+template<size_t N1, size_t N2, typename T>
+inline Vector<N1, T> vector_convert(const Vector<N2, T>& a, T fill = 1) {
+	Vector<N1, T> b;
+	for (size_t i = 0; i < N1; i++)
+		b[i] = (i < N2) ? a[i] : fill;
+	return b;
+}
+
+// = |a| ^ 2
+template<size_t N, typename T>
+inline T vector_length_square(const Vector<N, T>& a) {
+	T sum = 0;
+	for (size_t i = 0; i < N; i++) sum += a[i] * a[i];
+	return sum;
+}
+
+// = |a|
+template<size_t N, typename T>
+inline T vector_length(const Vector<N, T>& a) {
+	return sqrt(vector_length_square(a));
+}
+
+// = |a| , 特化 float 类型，使用 sqrtf
+template<size_t N>
+inline float vector_length(const Vector<N, float>& a) {
+	return sqrtf(vector_length_square(a));
+}
+
+// = a / |a|
+template<size_t N, typename T>
+inline Vector<N, T> vector_normalize(const Vector<N, T>& a) {
+	return a / vector_length(a);
+}
+
+// 矢量点乘
+template<size_t N, typename T>
+inline T vector_dot(const Vector<N, T>& a, const Vector<N, T>& b) {
+	T sum = 0;
+	for (size_t i = 0; i < N; i++) sum += a[i] * b[i];
+	return sum;
+}
+
+// 二维矢量叉乘，得到标量
+template<typename T>
+inline T vector_cross(const Vector<2, T>& a, const Vector<2, T>& b) {
+	return a.x * b.y - a.y * b.x;
+}
+
+// 三维矢量叉乘，得到新矢量
+template<typename T>
+inline Vector<3, T> vector_cross(const Vector<3, T>& a, const Vector<3, T>& b) {
+	return Vector<3, T>(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+}
+
+// 四维矢量叉乘：前三维叉乘，后一位保留
+template<typename T>
+inline Vector<4, T> vector_cross(const Vector<4, T>& a, const Vector<4, T>& b) {
+	return Vector<4, T>(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x, a.w);
+}
+
+// = a + (b - a) * t
+template<size_t N, typename T>
+inline Vector<N, T> vector_lerp(const Vector<N, T>& a, const Vector<N, T>& b, float t) {
+	return a + (b - a) * t;
+}
+
+// 各个元素取最大值
+template<size_t N, typename T>
+inline Vector<N, T> vector_max(const Vector<N, T>& a, const Vector<N, T>& b) {
+	Vector<N, T> c;
+	for (size_t i = 0; i < N; i++) c[i] = (a[i] > b[i]) ? a[i] : b[i];
+	return c;
+}
+
+// 各个元素取最小值
+template<size_t N, typename T>
+inline Vector<N, T> vector_min(const Vector<N, T>& a, const Vector<N, T>& b) {
+	Vector<N, T> c;
+	for (size_t i = 0; i < N; i++) c[i] = (a[i] < b[i]) ? a[i] : b[i];
+	return c;
+}
+
+// 将矢量的值控制在 minx/maxx 范围内
+template<size_t N, typename T>
+inline Vector<N, T> vector_between(const Vector<N, T>& minx, const Vector<N, T>& maxx, const Vector<N, T>& x) {
+	return vector_min(vector_max(minx, x), maxx);
+}
+
+// 判断矢量是否接近
+template<size_t N, typename T>
+inline bool vector_near(const Vector<N, T>& a, const Vector<N, T>& b, T dist) {
+	return (vector_length_square(a - b) <= dist);
+}
+
+// 判断两个单精度矢量是否近似
+template<size_t N>
+inline bool vector_near_equal(const Vector<N, float>& a, const Vector<N, float>& b, float e = 0.0001) {
+	return vector_near(a, b, e);
+}
+
+// 判断两个双精度矢量是否近似
+template<size_t N>
+inline bool vector_near_equal(const Vector<N, double>& a, const Vector<N, double>& b, double e = 0.0000001) {
+	return vector_near(a, b, e);
+}
+
+// 矢量值元素范围裁剪
+template<size_t N, typename T>
+inline Vector<N, T> vector_clamp(const Vector<N, T>& a, T minx = 0, T maxx = 1) {
+	Vector<N, T> b;
+	for (size_t i = 0; i < N; i++) {
+		T x = (a[i] < minx) ? minx : a[i];
+		b[i] = (x > maxx) ? maxx : x;
+	}
+	return b;
+}
+
+// 输出到文本流
+template<size_t N, typename T>
+inline std::ostream& operator << (std::ostream& os, const Vector<N, T>& a) {
+	os << "[";
+	for (size_t i = 0; i < N; i++) {
+		os << a[i];
+		if (i < N - 1) os << ", ";
+	}
+	os << "]";
+	return os;
+}
+
+// 输出成字符串
+template<size_t N, typename T>
+inline std::string vector_repr(const Vector<N, T>& a) {
+	std::stringstream ss;
+	ss << a;
+	return ss.str();
+}
+
+
 
 #endif

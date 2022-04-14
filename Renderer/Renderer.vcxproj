@@ -148,7 +148,6 @@
   <ItemGroup>
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="SoftEngine.cpp" />
     <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
