@@ -4,11 +4,11 @@
 /// Camera
 /// </summary>
 Camera::Camera()
-	: position(Vector3(0, 0, 0)), target(Vector3(0, 0, -10))
+	: position(Vector3f(0, 0, 0)), target(Vector3f(0, 0, -10))
 {
 }
 
-Camera::Camera(const Vector3& _position, const Vector3& _target)
+Camera::Camera(const Vector3f& _position, const Vector3f& _target)
 	: position(_position), target(_target)
 {
 }
@@ -22,16 +22,16 @@ Camera::~Camera()
 Mesh::Mesh()
 	: name("default")
 {
-	vertices = std::vector<Vector3>(0);
+	vertices = std::vector<Vector3f>(0);
 }
 
 Mesh::Mesh(const std::string& _name, int verticesCount)
 	: name(_name)
 {
-	vertices = std::vector<Vector3>(verticesCount);
+	vertices = std::vector<Vector3f>(verticesCount);
 }
 
-Vector3 Mesh::GetVertices(int index) const
+Vector3f Mesh::GetVertices(int index) const
 {
 	if (index >= vertices.size() || index < 0)
 	{
@@ -41,7 +41,7 @@ Vector3 Mesh::GetVertices(int index) const
 	return vertices[index];
 }
 
-void Mesh::SetVertices(int index, const Vector3& vertice)
+void Mesh::SetVertices(int index, const Vector3f& vertice)
 {
 	if (index >= vertices.size() || index < 0)
 	{

@@ -8,16 +8,16 @@ class Camera
 {
 public:
 	Camera();
-	Camera(const Vector3& _position, const Vector3& _target);
-	Vector3 GetPosition() const { return position; };
-	Vector3 GetTarget() const { return target; };
-	void SetPosition(const Vector3& _position) { position = _position; };
-	void SetTarget(const Vector3& _target) { target = _target; };
+	Camera(const Vector3f& _position, const Vector3f& _target);
+	Vector3f GetPosition() const { return position; };
+	Vector3f GetTarget() const { return target; };
+	void SetPosition(const Vector3f& _position) { position = _position; };
+	void SetTarget(const Vector3f& _target) { target = _target; };
 	~Camera();
 
 private:
-	Vector3 position;
-	Vector3 target;
+	Vector3f position;
+	Vector3f target;
 };
 
 class Mesh
@@ -26,20 +26,20 @@ public:
 	Mesh();
 	Mesh(const std::string& _name, int verticesCount);
 	std::string GetName() const { return name; };
-	Vector3 GetPosition() const { return position; };
-	Vector3 GetRotation() const { return rotation; };
-	Vector3 GetVertices(int index) const;
+	Vector3f GetPosition() const { return position; };
+	Vector3f GetRotation() const { return rotation; };
+	Vector3f GetVertices(int index) const;
 	void SetName(const std::string& _name) { name = _name; };
-	void SetPosition(const Vector3& _position) { position = _position; };
-	void SetTarget(const Vector3& _rotation) { rotation = _rotation; };
-	void SetVertices(int index, const Vector3& vertice);
+	void SetPosition(const Vector3f& _position) { position = _position; };
+	void SetTarget(const Vector3f& _rotation) { rotation = _rotation; };
+	void SetVertices(int index, const Vector3f& vertice);
 	~Mesh();
 
 private:
 	std::string name;
-	std::vector<Vector3> vertices;
-	Vector3 position;
-	Vector3 rotation;
+	std::vector<Vector3f> vertices;
+	Vector3f position;
+	Vector3f rotation;
 };
 
 class Deivce
@@ -49,7 +49,7 @@ public:
 	void Clear(char r, char g, char b, char a);
 	void Present();
 	void PutPixel(int x, int y, Color color);
-	//void Project(Vector3 coord, Matrix transMat);
+	//void Project(Vector3f coord, Matrix transMat);
 	// DrawPoint calls PutPixel but does the clipping operation before
 	//void DrawPoint(Vector2 point);
 	//void Render(Camera, vector<Mesh> meshes);
