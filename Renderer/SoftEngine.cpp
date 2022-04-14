@@ -1,4 +1,6 @@
 #include "SoftEngine.h"
+#include "VectorNT.h"
+#include "Matrix.h"
 
 /// <summary>
 /// Camera
@@ -86,6 +88,16 @@ void Device::PutPixel(int x, int y, Color color)
 	backBuffer[offset + 1] = (char)(color.g * 255);
 	backBuffer[offset + 2] = (char)(color.b * 255);
 	backBuffer[offset + 3] = 255; // bmp do not have alpha, but other ways for showing would use it
+}
+
+Vector2f Device::Project(Vector3f coord, Mat3x3f transMat)
+{
+	// transforming the coordinates
+	Vector3f point = TransformCoordinate(coord, transMat);
+	
+	float x = point.x * bmp.GetWidth() + bmp.GetWidth() / 2.0f;
+	float y = -point.y * bmp.GetHeight() + bmp.GetHeight() / 2.0f;
+	return (Vector2f(x, y));
 }
 
 void Device::DrawPoint(Vector2f point)

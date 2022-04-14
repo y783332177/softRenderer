@@ -276,6 +276,16 @@ inline std::ostream& operator << (std::ostream& os, const Matrix<ROW, COL, T>& m
 	return os;
 }
 
+template<size_t N, typename T>
+inline Vector<N, T> TransformCoordinate(Vector<N, T> coord, Matrix<N, N, T> transMat)
+{
+	Vector<N, T> point;
+	point = transMat * coord;
+	return point;
+}
+
+
+
 typedef Matrix<4, 4, float> Mat4x4f;
 typedef Matrix<3, 3, float> Mat3x3f;
 typedef Matrix<4, 3, float> Mat4x3f;

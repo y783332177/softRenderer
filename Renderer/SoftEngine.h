@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include "VectorNT.h"
+#include "Matrix.h"
 #include "Image.h"
 class Camera
 {
@@ -49,7 +50,7 @@ public:
 	void Clear(char r, char g, char b, char a);
 	void Present();
 	void PutPixel(int x, int y, Color color);
-	//void Project(Vector3f coord, Matrix transMat);
+	Vector2f Project(Vector3f coord, Mat3x3f transMat);
 	void DrawPoint(Vector2f point);
 	//void Render(Camera, vector<Mesh> meshes);
 
