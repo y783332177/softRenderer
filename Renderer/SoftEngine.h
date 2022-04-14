@@ -33,7 +33,7 @@ public:
 	const std::vector<Vector3f> GetVertices() const { return vertices; };
 	void SetName(const std::string& _name) { name = _name; };
 	void SetPosition(const Vector3f& _position) { position = _position; };
-	void SetTarget(const Vector3f& _rotation) { rotation = _rotation; };
+	void SetRotation(const Vector3f& _rotation) { rotation = _rotation; };
 	void SetVertices(int index, const Vector3f& vertice);
 	~Mesh();
 
