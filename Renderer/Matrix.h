@@ -306,7 +306,7 @@ inline Mat4x4f LookAtRH(Vector3f cameraPos, Vector3f cameraTar, Vector3f upVec)
 	return lookAt;
 }
 
-inline Mat4x4f PerspectiveFovRH(float fovy, float Aspect, float zn, float zf)
+inline Mat4x4f PerspectiveFovRH(const float fovy, const float Aspect, const float zn, const float zf)
 {
 	Mat4x4f projectionMatrix;
 	projectionMatrix.SetCol(0, Vector4f(1 / tanf(fovy / 2), 0, 0, 0));
@@ -327,7 +327,7 @@ inline Mat4x4f Translation(const Vector3f& transVec)
 	return translationMatrix;
 }
 
-inline Mat4x4f RotationYaw(float yaw) 
+inline Mat4x4f RotationYaw(const float yaw) 
 {
 	Mat4x4f roYaw;
 	roYaw.SetCol(0, Vector4f(cosf(yaw), 0, sinf(yaw), 0));
@@ -336,7 +336,7 @@ inline Mat4x4f RotationYaw(float yaw)
 	roYaw.SetCol(3, Vector4f(0, 0, 0, 1));
 	return roYaw;
 }
-inline Mat4x4f RotationPitch(float pitch)
+inline Mat4x4f RotationPitch(const float pitch)
 {
 	Mat4x4f roPitch;
 	roPitch.SetCol(0, Vector4f(1, 0, 0, 0));
@@ -345,7 +345,7 @@ inline Mat4x4f RotationPitch(float pitch)
 	roPitch.SetCol(3, Vector4f(0, 0, 0, 1));
 	return roPitch;
 }
-inline Mat4x4f RotationRoll(float roll)
+inline Mat4x4f RotationRoll(const float roll)
 {
 	Mat4x4f roRoll;
 	roRoll.SetCol(0, Vector4f(cosf(roll), -sinf(roll), 0, 0));
