@@ -111,11 +111,16 @@ void Device::DrawPoint(Vector2f point)
 	}
 }
 
+void Device::DrawLine(Vector2f point0, Vector2f point1)
+{
+
+}
+
 void Device::Render(Camera camera, std::vector<Mesh> meshes)
 {
 	// MVP matrix first
 	auto viewMatrix = LookAtRH(camera.GetPosition(), camera.GetTarget(), Vector3f(0.0f, 1.0f, 0.0f));
-	auto projectionMatrix = PerspectiveFovRH(1.4f, (float)bmp.GetWidth() / bmp.GetHeight(), 0.5f, 20.0f);
+	auto projectionMatrix = PerspectiveFovRH(0.78f, (float)bmp.GetWidth() / bmp.GetHeight(), 0.5f, 20.0f);
 
 	for (Mesh mesh : meshes)
 	{

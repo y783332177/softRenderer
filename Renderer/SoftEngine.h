@@ -53,6 +53,7 @@ public:
 	void PutPixel(int x, int y, Color color);
 	Vector2f Project(Vector3f coord, Mat4x4f transMat);
 	void DrawPoint(Vector2f point);
+	void DrawLine(Vector2f point0, Vector2f point1);
 	void Render(Camera camera, std::vector<Mesh> meshes);
 
 	~Device();
