@@ -98,8 +98,8 @@ Vector2f Device::Project(Vector3f coord, Mat4x4f transMat)
 {
 	// transforming the coordinates
 	Vector4f point = TransformCoordinate(coord.xyz1(), transMat);
-	float x = point.x * bmp.GetWidth() / 2.0f + bmp.GetWidth() / 2.0f;
-	float y = point.y * bmp.GetHeight() / 2.0f + bmp.GetHeight() / 2.0f;
+	float x = (point.x / point.w) * bmp.GetWidth() / 2.0f + bmp.GetWidth() / 2.0f;
+	float y = (point.y / point.w) * bmp.GetHeight() / 2.0f + bmp.GetHeight() / 2.0f;
 	return (Vector2f(x, y));
 }
 
