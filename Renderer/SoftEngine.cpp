@@ -1,6 +1,7 @@
 #include "SoftEngine.h"
 #include "VectorNT.h"
 #include "Matrix.h"
+#include "CLine.h"
 
 /// <summary>
 /// Camera
@@ -113,7 +114,8 @@ void Device::DrawPoint(Vector2f point)
 
 void Device::DrawLine(Vector2f point0, Vector2f point1)
 {
-
+	CLine line(point0, point1, Color(1.0f, 1.0f, 1.0f));
+	line.lineToOptimization(*this);
 }
 
 void Device::Render(Camera camera, std::vector<Mesh> meshes)
@@ -127,12 +129,20 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 		auto meshRotation = mesh.GetRotation();
 		auto worldMatrix =  RotationPitch(meshRotation[0]) * RotationYaw(meshRotation[1]) * RotationRoll(meshRotation[2]) * Translation(mesh.GetPosition());
 		auto transformMatrix = projectionMatrix * viewMatrix * worldMatrix;
-
-		for (auto& vertex : mesh.GetVertices())
+		
+		std::vector<Vector3f> vertices = mesh.GetVertices();
+		for (int i = 0; i < vertices.size() - 1; i++)
+		{
+			auto point0 = Project(vertices[i], transformMatrix);
+			auto point1 = Project(vertices[i + 1], transformMatrix);
+			DrawLine(point0, point1);
+		}
+		/*for (auto& vertex : mesh.GetVertices())
 		{
 			auto point = Project(vertex, transformMatrix);
+			std::cout << point << std::endl;
 			DrawPoint(point);
-		}
+		}*/
 	}
 }
 
