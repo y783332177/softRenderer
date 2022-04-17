@@ -38,14 +38,32 @@ Mesh::Mesh(const std::string& _name, int verticesCount)
 	SetRotation(Vector3f(0., 0., 0.));
 }
 
+Mesh::Mesh(const std::string& _name, int verticesCount, int facesCount)
+	: name(_name)
+{
+	vertices = std::vector<Vector3f>(verticesCount);
+	faces = std::vector<Face>(facesCount);
+	SetPosition(Vector3f(0., 0., 0.));
+	SetRotation(Vector3f(0., 0., 0.));
+}
+
 Vector3f Mesh::GetVertice(int index) const
 {
 	if (index >= vertices.size() || index < 0)
 	{
-		std::cout << "[Vertices Get]: index overflow\n";
+		std::cout << "[Vertice Get]: index overflow\n";
 		return vertices[vertices.size() - 1];
 	}
 	return vertices[index];
+}
+
+Face Mesh::GetFace(int index) const
+{
+	if (index >= faces.size() || index < 0)
+	{
+		std::cout << "[Face Get]: index overflow\n";
+	}
+	return faces[index];
 }
 
 void Mesh::SetVertices(int index, const Vector3f& vertice)
@@ -56,6 +74,16 @@ void Mesh::SetVertices(int index, const Vector3f& vertice)
 		return;
 	}
 	vertices[index] = vertice;
+}
+
+void Mesh::SetFaces(int index, const Face& face)
+{
+	if (index >= faces.size() || index < 0)
+	{
+		std::cout << "[Faecs Set]: index overflow\n";
+		return;
+	}
+	faces[index] = face;
 }
 
 Mesh::~Mesh()
@@ -131,18 +159,20 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 		auto transformMatrix = projectionMatrix * viewMatrix * worldMatrix;
 		
 		std::vector<Vector3f> vertices = mesh.GetVertices();
-		for (int i = 0; i < vertices.size() - 1; i++)
+		for (auto& face : mesh.GetFaces())
 		{
-			auto point0 = Project(vertices[i], transformMatrix);
-			auto point1 = Project(vertices[i + 1], transformMatrix);
-			DrawLine(point0, point1);
+			auto& vertexA = vertices[face.A];
+			auto& vertexB = vertices[face.B];
+			auto& vertexC = vertices[face.C];
+
+			auto pixelA = Project(vertexA, transformMatrix);
+			auto pixelB = Project(vertexB, transformMatrix);
+			auto pixelC = Project(vertexC, transformMatrix);
+
+			DrawLine(pixelA, pixelB);
+			DrawLine(pixelB, pixelC);
+			DrawLine(pixelC, pixelA);
 		}
-		/*for (auto& vertex : mesh.GetVertices())
-		{
-			auto point = Project(vertex, transformMatrix);
-			std::cout << point << std::endl;
-			DrawPoint(point);
-		}*/
 	}
 }
 
