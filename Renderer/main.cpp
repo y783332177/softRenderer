@@ -3,6 +3,7 @@
 #include "Matrix.h"
 #include "SoftEngine.h"
 #include "iostream"
+#include "Window.h"
 #include <string>
 int main()
 {
@@ -37,6 +38,19 @@ int main()
 	mesh.SetFaces(9, Face(0, 4, 7));
 	mesh.SetFaces(10, Face(4, 5, 6));
 	mesh.SetFaces(11, Face(4, 6, 7));
+
+	Window* pWindow = new Window(width, height);
+
+	bool running = true;
+	while (running)
+	{
+		if (!pWindow->ProcessMessages())
+		{
+			std::cout << "Closing Window\n";
+			running = false;
+		}
+		Sleep(10);
+	}
 	for (int i = 0; i < 1; i++)
 	{
 		d.Clear(0, 0, 0, 255);
@@ -46,4 +60,7 @@ int main()
 		d.Render(camera, { mesh });
 		d.Present();
 	}
+
+	delete pWindow;
+	return 0;
 }
