@@ -41,16 +41,7 @@ int main()
 
 	Window* pWindow = new Window(width, height);
 
-	bool running = true;
-	while (running)
-	{
-		if (!pWindow->ProcessMessages())
-		{
-			std::cout << "Closing Window\n";
-			running = false;
-		}
-		Sleep(10);
-	}
+
 	for (int i = 0; i < 1; i++)
 	{
 		d.Clear(0, 0, 0, 255);
@@ -61,6 +52,19 @@ int main()
 		d.Present();
 	}
 
+	bool running = true;
+	while (running)
+	{
+		if (!pWindow->ProcessMessages())
+		{
+			std::cout << "Closing Window\n";
+			running = false;
+		}
+		std::vector<char> data = d.getBackBuffer();
+		pWindow->MyDraw(data);
+		Sleep(10);
+	}
+	
 	delete pWindow;
 	return 0;
 }

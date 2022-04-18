@@ -96,6 +96,11 @@ Device::Device(Image& _bmp)
 	backBuffer = std::vector<char>(bmp.GetWidth() * bmp.GetHeight() * 4);
 }
 
+std::vector<char> Device::getBackBuffer()
+{
+	return backBuffer;
+}
+
 void Device::Clear(char r, char g, char b, char a)
 {
 	for (int index = 0; index < backBuffer.size(); index += 4)
