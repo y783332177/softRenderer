@@ -31,13 +31,13 @@ public:
 	void SetColor(const Color& color, int x, int y);
 	int GetWidth() const { return m_width; };
 	int GetHeight() const { return m_height; };
-	void WriteBmp(std::vector<char>& buffer);
+	void WriteBmp(const char* buffer, const int bufferSize);
 
 	void Export(const char* path);
 
 private:
 	int m_width;
 	int m_height;
-	long area;
+	int area;
 	std::vector<Color> m_colors;
 };

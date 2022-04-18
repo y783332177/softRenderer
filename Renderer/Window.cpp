@@ -1,5 +1,4 @@
 #include "Window.h"
-#include "vector"
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -85,26 +84,13 @@ bool Window::ProcessMessages()
 	return true;
 }
 
-void Window::MyDraw(std::vector<char> _data)
+void Window::MyDraw(char *_data)
 {
 	int nx = 640;
 	int ny = 480;
 	int channels = 4;
-	char* data = new char[nx * ny * channels];
-	for (int j = ny - 1; j >= 0; j--)
-	{
-		for (int i = 0; i < nx; i++)
-		{
-			int ir = (int)_data[j * nx * 3 + i * 3];
-			int ig = (int)_data[j * nx * 3 + i * 3 + 1];
-			int ib = (int)_data[j * nx * 3 + i * 3 + 2];
-			int ia = (int)_data[j * nx * 3 + i * 3 + 3];
-			data[j * nx * 3 + i * 3] = ir;
-			data[j * nx * 3 + i * 3 + 1] = ig;
-			data[j * nx * 3 + i * 3 + 2] = ib;
-			data[j * nx * 3 + i * 3 + 3] = ia;
-		}
-	}
+	char* data = _data;
+	
 	BITMAPINFO bmi;
 	::ZeroMemory(&bmi, sizeof(BITMAPINFO));
 	bmi.bmiHeader.biSize = sizeof(BITMAPINFO);
@@ -115,16 +101,7 @@ void Window::MyDraw(std::vector<char> _data)
 	bmi.bmiHeader.biBitCount = 32;
 	bmi.bmiHeader.biCompression = BI_RGB;
 	bmi.bmiHeader.biSizeImage = nx * ny * channels;
-
-	/*HDC hCompatibleDC = CreateCompatibleDC(m_hDc);
-	HBITMAP hCompatibleBitmap = CreateCompatibleBitmap(m_hDc, bmi.bmiHeader.biWidth, bmi.bmiHeader.biHeight);
-	HBITMAP hOldBitmap = (HBITMAP)SelectObject(hCompatibleDC, hCompatibleBitmap);
-	SetDIBits(m_hDc, hCompatibleBitmap, 0, bmi.bmiHeader.biHeight, data, (BITMAPINFO*)&bmi.bmiHeader, DIB_RGB_COLORS);
-	BitBlt(m_hDc, 0, 0, bmi.bmiHeader.biWidth, bmi.bmiHeader.biHeight, hCompatibleDC, 0, 0, SRCCOPY);
-	SelectObject(hCompatibleDC, hOldBitmap);
-	DeleteObject(hCompatibleDC);*/
 	
 	StretchDIBits(m_hDc, 0, 0, bmi.bmiHeader.biWidth, bmi.bmiHeader.biHeight,
 		0, 0, bmi.bmiHeader.biWidth, bmi.bmiHeader.biHeight, data, (BITMAPINFO*)&bmi.bmiHeader, DIB_RGB_COLORS, SRCCOPY);
-	delete [] data;
 }

@@ -93,17 +93,18 @@ Mesh::~Mesh()
 Device::Device(Image& _bmp)
 	: bmp(_bmp)
 {
-	backBuffer = std::vector<char>(bmp.GetWidth() * bmp.GetHeight() * 4);
+	backBufferSize = bmp.GetWidth() * bmp.GetHeight() * 4;
+	backBuffer = new char[backBufferSize];
 }
 
-std::vector<char> Device::getBackBuffer()
+char* Device::getBackBuffer()
 {
 	return backBuffer;
 }
 
 void Device::Clear(char r, char g, char b, char a)
 {
-	for (int index = 0; index < backBuffer.size(); index += 4)
+	for (int index = 0; index < backBufferSize; index += 4)
 	{
 		backBuffer[index] = r;
 		backBuffer[index + 1] = g;
@@ -114,7 +115,7 @@ void Device::Clear(char r, char g, char b, char a)
 
 void Device::Present()
 {
-	bmp.WriteBmp(backBuffer);
+	bmp.WriteBmp(backBuffer, backBufferSize);
 	bmp.Export("default.bmp");
 }
 
@@ -183,4 +184,5 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 
 Device::~Device()
 {
+	delete [] backBuffer;
 }

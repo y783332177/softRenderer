@@ -71,10 +71,11 @@ public:
 	void DrawPoint(Vector2f point);
 	void DrawLine(Vector2f point0, Vector2f point1);
 	void Render(Camera camera, std::vector<Mesh> meshes);
-	std::vector<char> getBackBuffer();
+	char* getBackBuffer();
 	~Device();
 
 private:
-	std::vector<char> backBuffer;
+	char *backBuffer;
+	int backBufferSize;
 	Image bmp;
 };

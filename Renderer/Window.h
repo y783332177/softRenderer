@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Windows.h>
-#include <vector>
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -14,7 +13,7 @@ public:
 	~Window();
 
 	bool ProcessMessages();
-	void MyDraw(std::vector<char>);
+	void MyDraw(char *);
 private:
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;

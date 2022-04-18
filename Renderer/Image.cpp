@@ -45,9 +45,9 @@ void Image::SetColor(const Color& color, int x, int y)
 /// get the backbuffer and write it to bmp buffer
 /// </summary>
 /// <param name="buffer"></param>
-void Image::WriteBmp(std::vector<char>& buffer)
+void Image::WriteBmp(const char* buffer, const int bufferSize)
 {
-	if (area * 4 != buffer.size())
+	if (area * 4 != bufferSize)
 	{
 		std::cout << "[Image WriteBmp]: wrong buffer size, buffer size should be 4 * area!\n";
 		return;

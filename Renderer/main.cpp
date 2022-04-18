@@ -60,7 +60,7 @@ int main()
 			std::cout << "Closing Window\n";
 			running = false;
 		}
-		std::vector<char> data = d.getBackBuffer();
+		char *data = d.getBackBuffer();
 		pWindow->MyDraw(data);
 		Sleep(10);
 	}
