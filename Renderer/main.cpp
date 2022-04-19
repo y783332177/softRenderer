@@ -16,12 +16,14 @@ int main()
 
 	Image image(width, height);
 	Device d(image);
-	Mesh mesh("Cube", 8, 12);
+	//Mesh mesh("Cube", "C:\\github\\softRenderer\\Renderer\\cube.obj");
+	Mesh mesh("bunny", "C:\\github\\softRenderer\\Renderer\\bunny.obj");
+	
 	mesh.SetPosition(Vector3f(0., 0., 0.));
 	mesh.SetRotation(Vector3f(0., 0., 0.));
-	Camera camera(Vector3f(0.0f, 0.0f, 10.0f), Vector3f(0.0f, 0.0f, 0.0f));
+	Camera camera(Vector3f(0.0f, 0.0f, 1.0f), Vector3f(0.0f, 0.0f, 0.0f));
 
-	mesh.SetVertices(0, Vector3f(-1, 1, 1));
+	/*mesh.SetVertices(0, Vector3f(-1, 1, 1));
 	mesh.SetVertices(1, Vector3f(1, 1, 1));
 	mesh.SetVertices(2, Vector3f(-1, -1, 1));
 	mesh.SetVertices(3, Vector3f(1, -1, 1));
@@ -41,11 +43,21 @@ int main()
 	mesh.SetFaces(8, Face(0, 2, 7));
 	mesh.SetFaces(9, Face(0, 4, 7));
 	mesh.SetFaces(10, Face(4, 5, 6));
-	mesh.SetFaces(11, Face(4, 6, 7));
+	mesh.SetFaces(11, Face(4, 6, 7));*/
 
 	Window* pWindow = new Window(width, height);
 
-	float ro = 0.02;
+	for (int i = 0; i < 1; i++)
+	{
+		d.Clear(0, 0, 0, 255);
+
+		auto r = mesh.GetRotation();
+		mesh.SetRotation(Vector3f(r.x + 0.f, r.y -0.5f, r.z - 2.2f));
+		d.Render(camera, { mesh });
+		d.Present();
+	}
+
+	float ro = 0.021;
 	bool running = true;
 	while (running)
 	{
@@ -54,17 +66,13 @@ int main()
 			std::cout << "Closing Window\n";
 			running = false;
 		}
-		for (int i = 0; i < 1; i++)
-		{
-			d.Clear(0, 0, 0, 255);
-
-			auto r = mesh.GetRotation();
-			mesh.SetRotation(Vector3f(r.x + ro, r.y - ro, r.z + ro));
-			d.Render(camera, { mesh });
-			d.Present();
-		}
 		char *data = d.getBackBuffer();
 		pWindow->MyDraw(data);
+
+		d.Clear(0, 0, 0, 255);
+		auto r = mesh.GetRotation();
+		//mesh.SetRotation(Vector3f(r.x + ro, r.y + ro, r.z -ro));
+		d.Render(camera, { mesh });
 		Sleep(10);
 	}
 

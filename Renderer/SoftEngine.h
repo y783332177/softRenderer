@@ -31,12 +31,46 @@ struct Face
 	Face(int _A, int _B, int _C) : A(_A), B(_B), C(_C) {};
 };
 
+struct Material
+{
+	Material()
+	{
+		name;
+		Ns = 0.0f;
+	}
+	std::string name;
+	Color Ka;
+	Color Kd;
+	Color Ks;
+	// 镜面反射指数
+	float Ns;
+	// 光密度
+	float Ni;
+	//dissolve
+	float d;
+	//光照
+	int illum;
+	//环境纹理贴图
+	std::string map_Ka;
+	//漫反射纹理贴图
+	std::string map_Kd;
+	//镜面反射纹理贴图
+	std::string map_Ks;
+	//镜面反射高光贴图
+	std::string map_Ns;
+	//alpha 纹理贴图
+	std::string map_d;
+	// 凹凸贴图
+	std::string map_bump;
+};
+
 class Mesh
 {
 public:
 	Mesh();
 	Mesh(const std::string& _name, int verticesCount);
 	Mesh(const std::string& _name, int verticesCount, int facesCount);
+	Mesh(const std::string& _name, const std::string& objFile);
 	std::string GetName() const { return name; };
 	Vector3f GetPosition() const { return position; };
 	Vector3f GetRotation() const { return rotation; };
@@ -50,6 +84,11 @@ public:
 	void SetRotation(const Vector3f& _rotation) { rotation = _rotation; };
 	void SetVertices(int index, const Vector3f& vertice);
 	void SetFaces(int index, const Face& face);
+
+	void InsertVertice(const Vector3f& vertice);
+	void InsertFace(const Face& face);
+
+	void loadObjFile(const std::string filename);
 	~Mesh();
 
 private:

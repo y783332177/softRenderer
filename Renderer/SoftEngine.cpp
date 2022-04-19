@@ -1,7 +1,12 @@
+#include "common.h"
 #include "SoftEngine.h"
 #include "VectorNT.h"
 #include "Matrix.h"
 #include "DrawController.h"
+
+#include <fstream>
+#include <sstream>
+#include <string.h>
 
 /// <summary>
 /// Camera
@@ -47,6 +52,13 @@ Mesh::Mesh(const std::string& _name, int verticesCount, int facesCount)
 	SetRotation(Vector3f(0., 0., 0.));
 }
 
+Mesh::Mesh(const std::string& _name, const std::string& objFile) : name(_name)
+{
+	SetPosition(Vector3f(0., 0., 0.));
+	SetRotation(Vector3f(0., 0., 0.));
+	loadObjFile(objFile);
+}
+
 Vector3f Mesh::GetVertice(int index) const
 {
 	if (index >= vertices.size() || index < 0)
@@ -84,6 +96,88 @@ void Mesh::SetFaces(int index, const Face& face)
 		return;
 	}
 	faces[index] = face;
+}
+
+void Mesh::InsertVertice(const Vector3f& vertice)
+{
+	vertices.push_back(vertice);
+}
+
+void Mesh::InsertFace(const Face& face)
+{
+	faces.push_back(face);
+}
+
+void Mesh::loadObjFile(const std::string filename)
+{
+	std::ifstream in(filename.c_str());
+	if (!in.good())
+	{
+		std::cout << "ERROR: loading obj:(" << filename << ") file is not good" << "\n";
+		exit(0);
+	}
+	std::string line;
+
+	//std::vector<Vector2f> TCoords;
+	//std::vector<Vector3f> Normals;
+	while (!in.eof())
+	{
+		std::getline(in, line);
+		std::istringstream iss(line.c_str());
+		char trash;
+		if (!line.compare(0, 2, "v "))
+		{
+			iss >> trash;
+			float x, y, z;
+			iss >> x >> y >> z;
+			vertices.push_back(Vector3f(x, y, z));
+		}
+		else if (!line.compare(0, 3, "vn "))
+		{
+			iss >> trash >> trash;
+			float x, y, z;
+			iss >> x >> y >> z;
+			//Normals.push_back(Vector3f(x, y, z));
+		}
+		else if (!line.compare(0, 3, "vt "))
+		{
+			iss >> trash >> trash;
+			float x, y;
+			iss >> x >> y;
+			//TCoords.push_back(Vector2f(x, y));
+		}
+		else if (!line.compare(0, 2, "f "))
+		{
+			iss >> trash;
+			std::string str;
+			int vIndex, uvIndex, nIndex;
+			std::vector<Vector3i> f;
+			iss >> str;
+			if (str.find('/') != std::string::npos)
+			{
+				std::vector<std::string> rst;
+				Stringsplit(str,'/', rst);
+				StoiVUvN(rst, vIndex, uvIndex, nIndex);
+				f.push_back(Vector3i(vIndex - 1, uvIndex - 1, nIndex - 1));
+				while (iss >> str)
+				{
+					rst.clear();
+					Stringsplit(str, '/', rst);
+					StoiVUvN(rst, vIndex, uvIndex, nIndex);
+					f.push_back(Vector3i(vIndex - 1, uvIndex - 1, nIndex - 1));
+				}
+				faces.push_back(Face(f[0][0], f[1][0], f[2][0]));
+			}
+			else
+			{
+				int vIndex1,vIndex2, vIndex3;
+				vIndex1 = stoi(str);
+				iss >> vIndex2 >> vIndex3;
+				if (vIndex3 < 0|| vIndex2<0|| vIndex1 < 0) std::cout << vIndex1 << " " << vIndex2 << " " << vIndex3 << std::endl;
+				faces.push_back(Face(vIndex1 - 1, vIndex2 - 1, vIndex3 - 1));
+			}
+		}
+	}
 }
 
 Mesh::~Mesh()
@@ -157,7 +251,7 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 {
 	// MVP matrix first
 	auto viewMatrix = LookAtRH(camera.GetPosition(), camera.GetTarget(), Vector3f(0.0f, 1.0f, 0.0f));
-	auto projectionMatrix = PerspectiveFovRH(0.78f, (float)bmp.GetWidth() / bmp.GetHeight(), 0.5f, 20.0f);
+	auto projectionMatrix = PerspectiveFovRH(0.5f, (float)bmp.GetWidth() / bmp.GetHeight(), 0.5f, 20.0f);
 
 	for (Mesh mesh : meshes)
 	{
@@ -168,14 +262,27 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 		std::vector<Vector3f> vertices = mesh.GetVertices();
 		for (auto& face : mesh.GetFaces())
 		{
+			if (face.A < 0)
+			{
+				std::cout << "error A" << std::endl;
+				break;
+			}
+			if (face.B < 0)
+			{
+				std::cout << "error B" << std::endl;
+				break;
+			}
+			if (face.C < 0)
+			{
+				std::cout << "error C" << std::endl;
+				break;
+			}
 			auto& vertexA = vertices[face.A];
 			auto& vertexB = vertices[face.B];
 			auto& vertexC = vertices[face.C];
-
 			auto pixelA = Project(vertexA, transformMatrix);
 			auto pixelB = Project(vertexB, transformMatrix);
 			auto pixelC = Project(vertexC, transformMatrix);
-
 			DrawLine(pixelA, pixelB);
 			DrawLine(pixelB, pixelC);
 			DrawLine(pixelC, pixelA);
