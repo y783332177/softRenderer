@@ -4,7 +4,11 @@
 #include "SoftEngine.h"
 #include "iostream"
 #include "Window.h"
+#include "DrawController.h"
 #include <string>
+
+CLine CLine::Instance;
+
 int main()
 {
 	const int width = 640;
@@ -41,17 +45,7 @@ int main()
 
 	Window* pWindow = new Window(width, height);
 
-
-	for (int i = 0; i < 1; i++)
-	{
-		d.Clear(0, 0, 0, 255);
-
-		auto r = mesh.GetRotation();
-		mesh.SetRotation(Vector3f(r.x, r.y, r.z));
-		d.Render(camera, { mesh });
-		d.Present();
-	}
-
+	float ro = 0.02;
 	bool running = true;
 	while (running)
 	{
@@ -60,11 +54,20 @@ int main()
 			std::cout << "Closing Window\n";
 			running = false;
 		}
+		for (int i = 0; i < 1; i++)
+		{
+			d.Clear(0, 0, 0, 255);
+
+			auto r = mesh.GetRotation();
+			mesh.SetRotation(Vector3f(r.x + ro, r.y - ro, r.z + ro));
+			d.Render(camera, { mesh });
+			d.Present();
+		}
 		char *data = d.getBackBuffer();
 		pWindow->MyDraw(data);
 		Sleep(10);
 	}
-	
+
 	delete pWindow;
 	return 0;
 }

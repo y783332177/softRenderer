@@ -1,7 +1,7 @@
 #include "SoftEngine.h"
 #include "VectorNT.h"
 #include "Matrix.h"
-#include "CLine.h"
+#include "DrawController.h"
 
 /// <summary>
 /// Camera
@@ -148,7 +148,8 @@ void Device::DrawPoint(Vector2f point)
 
 void Device::DrawLine(Vector2f point0, Vector2f point1)
 {
-	CLine line(point0, point1, Color(1.0f, 1.0f, 1.0f));
+	CLine line = CLine::GetInstance();
+	line.Init(point0, point1, Color(1.0f, 1.0f, 1.0f));
 	line.lineToOptimization(*this);
 }
 

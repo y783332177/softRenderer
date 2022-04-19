@@ -35,11 +35,33 @@ CLine::CLine(const Vector2f &p0, const Vector2f &p1, const Color color)
 }
 CLine::~CLine() { }
 
+CLine CLine::GetInstance()
+{
+    static CLine Instance;
+    return Instance;
+}
+
+void CLine::Init(const Vector2i& p0, const Vector2i& p1, const Color color)
+{
+    startPoint = p0;
+    endPoint = p1;
+    lineColor = color;
+    //setLineK();
+    //setLineB();
+}
+void CLine::Init(const Vector2f& p0, const Vector2f& p1, const Color color)
+{
+    startPoint[0] = (int)p0[0], startPoint[1] = (int)p0[1];
+    endPoint[0] = (int)p1[0], endPoint[1] = (int)p1[1];
+    this->lineColor = color;
+    
+}
+
 void CLine::setStartPoint(const Vector2i &point)
 {
     this->startPoint = point;
-    setLineK();
-    setLineB();
+    //setLineK();
+    //setLineB();
 }
 Vector2i CLine::getStartPoint() const
 {
@@ -49,8 +71,8 @@ Vector2i CLine::getStartPoint() const
 void CLine::setEndPoint(const Vector2i &point)
 {
     this->endPoint = point;
-    setLineK();
-    setLineB();
+    //setLineK();
+    //setLineB();
 }
 
 Vector2i CLine::getEndPoint() const

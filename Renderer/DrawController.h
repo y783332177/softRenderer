@@ -23,11 +23,14 @@ private:
     Vector2i endPoint;
     Color lineColor;
 
-public:
+    static CLine Instance;
     CLine();
     CLine(const Vector2i&, const Vector2i&, Color color);
     CLine(const Vector2f&, const Vector2f&, Color color);
+public:
+    
     ~CLine();
+    static CLine GetInstance();
     // calculate mistake f(x,y) = y-kx-b
     //float getDistance(float x, float y);
     void lineTo(Image&);
@@ -41,6 +44,8 @@ public:
     void setLineK();
     void setLineB();
     void setColor(Color);
+    void Init(const Vector2f&, const Vector2f&, Color color);
+    void Init(const Vector2i&, const Vector2i&, Color color);
 };
 
 #endif
