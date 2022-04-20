@@ -110,7 +110,7 @@ public:
 	void DrawPoint(Vector2f point, Color color = Color(1.0f, 1.0f, 1.0f));
 	void DrawLine(Vector2f point0, Vector2f point1, Color color = Color(1.0f, 1.0f, 1.0f));
 	void Render(Camera camera, std::vector<Mesh> meshes);
-	char* getBackBuffer();
+	char* GetBackBuffer();
 	~Device();
 
 private:

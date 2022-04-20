@@ -22,7 +22,7 @@ int main()
 	
 	mesh.SetPosition(Vector3f(0., 0., 0.));
 	mesh.SetRotation(Vector3f(0., 0., 0.));
-	Camera camera(Vector3f(0.0f, 0.0f, 5.f), Vector3f(0.0f, 0.0f, 0.0f));
+	Camera camera(Vector3f(0.0f, 0.0f, 10.f), Vector3f(0.0f, 0.0f, 0.0f));
 	Window* pWindow = new Window(width, height);
 
 	for (int i = 0; i < 1; i++)
@@ -44,7 +44,7 @@ int main()
 			std::cout << "Closing Window\n";
 			running = false;
 		}
-		char *data = d.getBackBuffer();
+		char *data = d.GetBackBuffer();
 		pWindow->MyDraw(data);
 
 		d.Clear(0, 0, 0, 255);

@@ -191,7 +191,7 @@ Device::Device(Image& _bmp)
 	backBuffer = new char[backBufferSize];
 }
 
-char* Device::getBackBuffer()
+char* Device::GetBackBuffer()
 {
 	return backBuffer;
 }
@@ -283,9 +283,10 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 			auto pixelA = Project(vertexA, transformMatrix);
 			auto pixelB = Project(vertexB, transformMatrix);
 			auto pixelC = Project(vertexC, transformMatrix);
-			DrawLine(pixelA, pixelB);
-			DrawLine(pixelB, pixelC);
-			DrawLine(pixelC, pixelA);
+			//DrawLine(pixelA, pixelB);
+			//DrawLine(pixelB, pixelC);
+			//DrawLine(pixelC, pixelA);
+			CTriangle::DrawTriangle(*this, pixelA, pixelB, pixelC, Color(0.7f, 0.2f, 1.0f));
 		}
 	}
 }

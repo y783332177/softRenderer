@@ -48,4 +48,13 @@ public:
     void Init(const Vector2i&, const Vector2i&, Color color);
 };
 
+class CTriangle
+{
+public:
+    CTriangle();
+    ~CTriangle();
+    static void DrawTriangle(Device& d, Vector2f& p1, Vector2f& p2, Vector2f& p3, Color color);
+};
+
+
 #endif

@@ -243,3 +243,34 @@ void CLine::LineToOptimization(Device& d)
         }
     }
 }
+
+CTriangle::CTriangle()
+{
+}
+
+CTriangle::~CTriangle()
+{
+}
+
+void CTriangle::DrawTriangle(Device& d, Vector2f& p1, Vector2f& p2, Vector2f& p3, Color color)
+{
+    if (std::fabs(p1.y - p2.y) < 1e-6 && std::fabs(p1.y - p3.y) < 1e-6) return;
+
+    if (p1.y > p2.y) std::swap(p1, p2);
+    if (p1.y > p3.y) std::swap(p1, p3);
+    if (p2.y > p3.y) std::swap(p2, p3);
+    float totalHeight = p3.y - p1.y;
+    for (int i = 0; i < totalHeight; i++)
+    {
+        bool secondHalf = i > p2.y - p1.y || std::fabs(p2.y - p1.y) < 1e-6;
+        float segmentHeight = secondHalf ? (p3.y - p2.y) : (p2.y - p1.y);
+        float alpha = (float)i / totalHeight;
+        float beta = (float)(i - (secondHalf ? p2.y - p1.y : 0) / segmentHeight);
+        
+        Vector2f A = p1 + (p3 - p1) * alpha;
+        Vector2f B = secondHalf ? p2 + (p3 - p2) * beta : (p2 - p1) * beta;
+
+        if (A.x > B.x) std::swap(A, B);
+        d.DrawLine(A, B, color);
+    }
+}
