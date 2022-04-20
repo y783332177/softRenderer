@@ -3,7 +3,7 @@
 #include "Matrix.h"
 #include "SoftEngine.h"
 #include "Image.h"
-
+#include "common.h"
 
 #include<vector>
 #include<queue>
@@ -261,13 +261,13 @@ void CTriangle::DrawTriangle(Device& d, Vector2i& p1, Vector2i& p2, Vector2i& p3
     int totalHeight = p3.y - p1.y;
     for (int i = 0; i < totalHeight; i++)
     {
-        bool secondHalf = i > (p2.y - p1.y) || p1.y == p2.y;
+        bool secondHalf = (i >= (p2.y - p1.y)) || (p1.y == p2.y);
         int segmentHeight = secondHalf ? (p3.y - p2.y) : (p2.y - p1.y);
         float alpha = (float)i / totalHeight;
         float beta = (float)(i - (secondHalf ? (p2.y - p1.y) : 0)) / segmentHeight;
         
-        Vector2i A = p1 + Vector2i((p3 - p1).x * alpha, (p3 - p1).y * alpha);
-        Vector2i B = secondHalf ? p2 + Vector2i((p3 - p2).x * beta, (p3 - p2).y * beta) : p1 + Vector2i((p2 - p1).x * beta, (p2 - p1).y * beta);
+        Vector2i A = p1 + Vector2i(RoundF2I((p3 - p1).x * alpha), RoundF2I((p3 - p1).y * alpha));
+        Vector2i B = secondHalf ? p2 + Vector2i(RoundF2I((p3 - p2).x * beta), RoundF2I((p3 - p2).y * beta)) : p1 + Vector2i(RoundF2I((p2 - p1).x * beta), RoundF2I((p2 - p1).y * beta));
 
         if (A.x > B.x) std::swap(A, B);
         d.DrawLine(A, B, color);

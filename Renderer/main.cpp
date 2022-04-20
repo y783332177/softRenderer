@@ -45,7 +45,7 @@ int main()
 
 		d.Clear(0, 0, 0, 255);
 		auto r = mesh.GetRotation();
-		mesh.SetRotation(Vector3f(r.x + 0.2f, r.y + 0.2f, r.z));
+		mesh.SetRotation(Vector3f(r.x + 0.02f, r.y + 0.02f, r.z));
 		d.Render(camera, { mesh });
 
 		if (!pWindow->ProcessMessages())
@@ -66,7 +66,6 @@ int main()
 			frame = 0;
 			t = 0.f;
 		}
-		Sleep(1000000);
 	}
 
 	delete pWindow;

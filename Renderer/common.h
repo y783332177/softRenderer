@@ -21,4 +21,9 @@ inline float Interpolate(float min, float max, float gradient)
 {
 	return min + (max - min) * Clamp(gradient);
 }
+
+inline int RoundF2I(float value)
+{
+	return (int)(value + 0.5f);
+}
 #endif
