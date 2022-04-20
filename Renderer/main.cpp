@@ -16,13 +16,13 @@ int main()
 	const int height = 480;
 	Image image(width, height);
 	Device d(image);
-	Mesh mesh("Cube", "cube.obj");
+	//Mesh mesh("Cube", "cube.obj");
 	//Mesh mesh("bunny", "bunny.obj");
-	//Mesh mesh("head", "head.obj");
+	Mesh mesh("head", "head.obj");
 	
 	mesh.SetPosition(Vector3f(0., 0., 0.));
 	mesh.SetRotation(Vector3f(0., 0., 0.));
-	Camera camera(Vector3f(0.0f, 0.0f, 10.f), Vector3f(0.0f, 0.0f, 0.0f));
+	Camera camera(Vector3f(0.0f, 0.0f, 6.f), Vector3f(0.0f, 0.0f, 0.0f));
 	Window* pWindow = new Window(width, height);
 
 	for (int i = 0; i < 1; i++)
@@ -42,6 +42,12 @@ int main()
 	while (running)
 	{
 		clock_t begin = clock();
+
+		d.Clear(0, 0, 0, 255);
+		auto r = mesh.GetRotation();
+		mesh.SetRotation(Vector3f(r.x + 0.2f, r.y + 0.2f, r.z));
+		d.Render(camera, { mesh });
+
 		if (!pWindow->ProcessMessages())
 		{
 			std::cout << "Closing Window\n";
@@ -50,10 +56,6 @@ int main()
 		char *data = d.GetBackBuffer();
 		pWindow->MyDraw(data);
 
-		d.Clear(0, 0, 0, 255);
-		auto r = mesh.GetRotation();
-		mesh.SetRotation(Vector3f(r.x + 0.02f, r.y + 0.02f, r.z));
-		d.Render(camera, { mesh });
 		Sleep(NULL);
 		clock_t end = clock();
 		t += end - begin;
@@ -64,6 +66,7 @@ int main()
 			frame = 0;
 			t = 0.f;
 		}
+		Sleep(1000000);
 	}
 
 	delete pWindow;

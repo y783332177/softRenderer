@@ -53,7 +53,7 @@ class CTriangle
 public:
     CTriangle();
     ~CTriangle();
-    static void DrawTriangle(Device& d, Vector2f& p1, Vector2f& p2, Vector2f& p3, Color color);
+    static void DrawTriangle(Device& d, Vector2i& p1, Vector2i& p2, Vector2i& p3, Color color);
 };
 
 

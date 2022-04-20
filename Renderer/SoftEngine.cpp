@@ -217,27 +217,34 @@ void Device::PutPixel(int x, int y, Color color)
 {
 	int offset = (x + (bmp.GetHeight() - 1 - y) * bmp.GetWidth()) * 4;
 
-	backBuffer[offset] = (char)(color.r * 255);
-	backBuffer[offset + 1] = (char)(color.g * 255);
-	backBuffer[offset + 2] = (char)(color.b * 255);
+	backBuffer[offset] = (char)(color.r * 255 + 0.5f);
+	backBuffer[offset + 1] = (char)(color.g * 255 + 0.5f);
+	backBuffer[offset + 2] = (char)(color.b * 255 + 0.5f);
 	backBuffer[offset + 3] = 255; // bmp do not have alpha, but other ways for showing would use it
 }
 
-Vector2f Device::Project(Vector3f coord, Mat4x4f transMat)
+Vector2i Device::Project(Vector3f coord, Mat4x4f transMat)
 {
 	// transforming the coordinates
 	Vector4f point = TransformCoordinate(coord.xyz1(), transMat);
 	float x = (point.x / point.w) * bmp.GetWidth() / 2.0f + bmp.GetWidth() / 2.0f;
 	float y = (point.y / point.w) * bmp.GetHeight() / 2.0f + bmp.GetHeight() / 2.0f;
-	return (Vector2f(x, y));
+	return (Vector2i((int)(x + 0.5f), (int)(y + 0.5f)));
 }
 
 void Device::DrawPoint(Vector2f point, Color color)
 {
 	if (point.x >= 0 && point.y >= 0 && point.x < bmp.GetWidth() && point.y < bmp.GetHeight())
 	{
-		PutPixel((int)point.x, (int)point.y, color);
+		PutPixel((int)(point.x + 0.5f), (int)(point.y + 0.5f), color);
 	}
+}
+
+void Device::DrawLine(Vector2i point0, Vector2i point1, Color color)
+{
+	CLine line = CLine::GetInstance();
+	line.Init(point0, point1, color);
+	line.LineToOptimization(*this);
 }
 
 void Device::DrawLine(Vector2f point0, Vector2f point1, Color color)
@@ -290,7 +297,7 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 			//DrawLine(pixelC, pixelA);
 			float color = 0.25f + (faceIndex % facesLength * 0.75f / facesLength);
 			faceIndex++;
-			CTriangle::DrawTriangle(*this, pixelA, pixelB, pixelC, Color(color, color, color));
+			CTriangle::DrawTriangle(*this, pixelA, pixelB, pixelC, Color((char)(rand() % 255), (char)(rand() % 255), (char)(rand() % 255)));
 		}
 	}
 }

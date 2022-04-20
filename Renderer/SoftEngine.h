@@ -106,8 +106,9 @@ public:
 	void Clear(char r, char g, char b, char a);
 	void Present();
 	void PutPixel(int x, int y, Color color);
-	Vector2f Project(Vector3f coord, Mat4x4f transMat);
+	Vector2i Project(Vector3f coord, Mat4x4f transMat);
 	void DrawPoint(Vector2f point, Color color = Color(1.0f, 1.0f, 1.0f));
+	void DrawLine(Vector2i point0, Vector2i point1, Color color = Color(1.0f, 1.0f, 1.0f));
 	void DrawLine(Vector2f point0, Vector2f point1, Color color = Color(1.0f, 1.0f, 1.0f));
 	void Render(Camera camera, std::vector<Mesh> meshes);
 	char* GetBackBuffer();
