@@ -88,7 +88,7 @@ public:
 	void InsertVertice(const Vector3f& vertice);
 	void InsertFace(const Face& face);
 
-	void loadObjFile(const std::string filename);
+	void LoadObjFile(const std::string filename);
 	~Mesh();
 
 private:

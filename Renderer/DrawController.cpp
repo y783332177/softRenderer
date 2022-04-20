@@ -21,17 +21,17 @@ CLine::CLine()
     startPoint = {0, 0};
     endPoint = { 0, 0 };
     this->lineColor = Color(0.0f, 0.0f, 0.0f);
-    setLineK();
-    setLineB();
+    SetLineK();
+    SetLineB();
 }
-CLine::CLine(const Vector2i& p0, const Vector2i& p1, const Color color) : startPoint(p0), endPoint(p1), lineColor(color) { setLineK(); setLineB(); }
+CLine::CLine(const Vector2i& p0, const Vector2i& p1, const Color color) : startPoint(p0), endPoint(p1), lineColor(color) { SetLineK(); SetLineB(); }
 CLine::CLine(const Vector2f &p0, const Vector2f &p1, const Color color)
 {
     startPoint[0] = (int)p0[0], startPoint[1] = (int)p0[1];
     endPoint[0] = (int)p1[0], endPoint[1] = (int)p1[1];
     this->lineColor = color;
-    setLineK();
-    setLineB();
+    SetLineK();
+    SetLineB();
 }
 CLine::~CLine() { }
 
@@ -57,35 +57,35 @@ void CLine::Init(const Vector2f& p0, const Vector2f& p1, const Color color)
     
 }
 
-void CLine::setStartPoint(const Vector2i &point)
+void CLine::SetStartPoint(const Vector2i &point)
 {
     this->startPoint = point;
     //setLineK();
     //setLineB();
 }
-Vector2i CLine::getStartPoint() const
+Vector2i CLine::GetStartPoint() const
 {
     return this->startPoint;
 }
 
-void CLine::setEndPoint(const Vector2i &point)
+void CLine::SetEndPoint(const Vector2i &point)
 {
     this->endPoint = point;
     //setLineK();
     //setLineB();
 }
 
-Vector2i CLine::getEndPoint() const
+Vector2i CLine::GetEndPoint() const
 {
     return this->endPoint;
 }
 
-void CLine::setColor(const Color color)
+void CLine::SetColor(const Color color)
 {
     this->lineColor = color;
 }
 
-void CLine::setLineK()
+void CLine::SetLineK()
 {
     if (endPoint[0] == startPoint[0])
     {
@@ -95,7 +95,7 @@ void CLine::setLineK()
     this->lineK = (float)(endPoint[1] - startPoint[1]) / (endPoint[0] - startPoint[0]);
 }
 
-void CLine::setLineB()
+void CLine::SetLineB()
 {
     if (lineK == FLOAT_MAX)
     {
@@ -105,7 +105,7 @@ void CLine::setLineB()
     this->lineB = startPoint[1] - lineK * startPoint[0];
 }
 
-void CLine::lineTo(Image& image)
+void CLine::LineTo(Image& image)
 {
     bool steep = false;
     if (std::abs(startPoint[0] - endPoint[0]) < std::abs(startPoint[1] - endPoint[1]))
@@ -135,7 +135,7 @@ void CLine::lineTo(Image& image)
     }
 }
 
-void CLine::lineTo(Device &d)
+void CLine::LineTo(Device &d)
 {
     bool steep = false;
     if (std::abs(startPoint[0] - endPoint[0]) < std::abs(startPoint[1] - endPoint[1]))
@@ -166,7 +166,7 @@ void CLine::lineTo(Device &d)
 }
 
 
-void CLine::lineToOptimization(Image& image)
+void CLine::LineToOptimization(Image& image)
 {
     bool steep = false;
     if (std::abs(startPoint[0] - endPoint[0]) < std::abs(startPoint[1] - endPoint[1]))
@@ -204,7 +204,7 @@ void CLine::lineToOptimization(Image& image)
     }
 }
 
-void CLine::lineToOptimization(Device& d)
+void CLine::LineToOptimization(Device& d)
 {
     bool steep = false;
     if (std::abs(startPoint[0] - endPoint[0]) < std::abs(startPoint[1] - endPoint[1]))

@@ -18,9 +18,6 @@
     <ClInclude Include="Image.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="SoftEngine.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -28,6 +25,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="VectorNT.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawController.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="common.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,10 +44,16 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Vector3.cpp">
+    <ClCompile Include="SoftEngine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SoftEngine.cpp">
+    <ClCompile Include="common.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawController.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -33,17 +33,17 @@ public:
     static CLine GetInstance();
     // calculate mistake f(x,y) = y-kx-b
     //float getDistance(float x, float y);
-    void lineTo(Image&);
-    void lineTo(Device &d);
-    void lineToOptimization(Image&);
-    void lineToOptimization(Device &d);
-    void setStartPoint(const Vector2i &);
-    Vector2i getStartPoint() const;
-    void setEndPoint(const Vector2i&);
-    Vector2i getEndPoint() const;
-    void setLineK();
-    void setLineB();
-    void setColor(Color);
+    void LineTo(Image&);
+    void LineTo(Device &d);
+    void LineToOptimization(Image&);
+    void LineToOptimization(Device &d);
+    void SetStartPoint(const Vector2i &);
+    Vector2i GetStartPoint() const;
+    void SetEndPoint(const Vector2i&);
+    Vector2i GetEndPoint() const;
+    void SetLineK();
+    void SetLineB();
+    void SetColor(Color);
     void Init(const Vector2f&, const Vector2f&, Color color);
     void Init(const Vector2i&, const Vector2i&, Color color);
 };

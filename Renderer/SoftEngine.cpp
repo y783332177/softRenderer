@@ -56,7 +56,7 @@ Mesh::Mesh(const std::string& _name, const std::string& objFile) : name(_name)
 {
 	SetPosition(Vector3f(0., 0., 0.));
 	SetRotation(Vector3f(0., 0., 0.));
-	loadObjFile(objFile);
+	LoadObjFile(objFile);
 }
 
 Vector3f Mesh::GetVertice(int index) const
@@ -108,7 +108,7 @@ void Mesh::InsertFace(const Face& face)
 	faces.push_back(face);
 }
 
-void Mesh::loadObjFile(const std::string filename)
+void Mesh::LoadObjFile(const std::string filename)
 {
 	std::ifstream in(filename.c_str());
 	if (!in.good())
@@ -244,7 +244,7 @@ void Device::DrawLine(Vector2f point0, Vector2f point1)
 {
 	CLine line = CLine::GetInstance();
 	line.Init(point0, point1, Color(1.0f, 1.0f, 1.0f));
-	line.lineToOptimization(*this);
+	line.LineToOptimization(*this);
 }
 
 void Device::Render(Camera camera, std::vector<Mesh> meshes)
