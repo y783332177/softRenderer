@@ -12,4 +12,13 @@ void Stringsplit(std::string str, const const char split, std::vector<std::strin
 
 void StoiVUvN(std::vector<std::string>rst, int& vIndex, int& uvIndex, int& nIndex);
 
+inline float Clamp(float value, float min = 0, float max = 1)
+{
+	return std::max(min, std::min(value, max));
+}
+
+inline float Interpolate(float min, float max, float gradient)
+{
+	return min + (max - min) * Clamp(gradient);
+}
 #endif

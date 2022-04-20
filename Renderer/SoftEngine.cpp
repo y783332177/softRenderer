@@ -232,18 +232,18 @@ Vector2f Device::Project(Vector3f coord, Mat4x4f transMat)
 	return (Vector2f(x, y));
 }
 
-void Device::DrawPoint(Vector2f point)
+void Device::DrawPoint(Vector2f point, Color color)
 {
 	if (point.x >= 0 && point.y >= 0 && point.x < bmp.GetWidth() && point.y < bmp.GetHeight())
 	{
-		PutPixel((int)point.x, (int)point.y, Color(1.0f, 1.0f, 1.0f));
+		PutPixel((int)point.x, (int)point.y, color);
 	}
 }
 
-void Device::DrawLine(Vector2f point0, Vector2f point1)
+void Device::DrawLine(Vector2f point0, Vector2f point1, Color color)
 {
 	CLine line = CLine::GetInstance();
-	line.Init(point0, point1, Color(1.0f, 1.0f, 1.0f));
+	line.Init(point0, point1, color);
 	line.LineToOptimization(*this);
 }
 
