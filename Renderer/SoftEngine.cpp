@@ -170,10 +170,10 @@ void Mesh::loadObjFile(const std::string filename)
 			}
 			else
 			{
-				int vIndex1,vIndex2, vIndex3;
+				int vIndex1, vIndex2, vIndex3;
 				vIndex1 = stoi(str);
 				iss >> vIndex2 >> vIndex3;
-				if (vIndex3 < 0|| vIndex2<0|| vIndex1 < 0) std::cout << vIndex1 << " " << vIndex2 << " " << vIndex3 << std::endl;
+				if (vIndex3 < 0|| vIndex2 < 0 || vIndex1 < 0) std::cout << vIndex1 << " " << vIndex2 << " " << vIndex3 << std::endl;
 				faces.push_back(Face(vIndex1 - 1, vIndex2 - 1, vIndex3 - 1));
 			}
 		}
@@ -215,7 +215,7 @@ void Device::Present()
 
 void Device::PutPixel(int x, int y, Color color)
 {
-	int offset = (x + y * bmp.GetWidth()) * 4;
+	int offset = (x + (bmp.GetHeight() - 1 - y) * bmp.GetWidth()) * 4;
 
 	backBuffer[offset] = (char)(color.r * 255);
 	backBuffer[offset + 1] = (char)(color.g * 255);
