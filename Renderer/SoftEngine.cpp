@@ -260,6 +260,8 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 		auto transformMatrix = projectionMatrix * viewMatrix * worldMatrix;
 		
 		std::vector<Vector3f> vertices = mesh.GetVertices();
+		int facesLength = mesh.GetFaces().size();
+		int faceIndex = 0;
 		for (auto& face : mesh.GetFaces())
 		{
 			if (face.A < 0)
@@ -286,7 +288,9 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 			//DrawLine(pixelA, pixelB);
 			//DrawLine(pixelB, pixelC);
 			//DrawLine(pixelC, pixelA);
-			CTriangle::DrawTriangle(*this, pixelA, pixelB, pixelC, Color(0.7f, 0.2f, 1.0f));
+			float color = 0.25f + (faceIndex % facesLength * 0.75f / facesLength);
+			faceIndex++;
+			CTriangle::DrawTriangle(*this, pixelA, pixelB, pixelC, Color(color, color, color));
 		}
 	}
 }
