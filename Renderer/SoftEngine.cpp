@@ -251,7 +251,7 @@ void Device::DrawPoint(Vector3f point, Color color)
 	}
 }
 
-void Device::DrawLine(Vector3f point0, Vector3f pointt, Color color)
+void Device::DrawLine(Vector3f point0, Vector3f point1, Color color)
 {
 	CLine line = CLine::GetInstance();
 	line.Init(point0, point1, color);

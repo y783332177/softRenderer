@@ -18,17 +18,17 @@ const float FLOAT_MAX = *reinterpret_cast<float*>(&FLOAT_MAX_BIT);
 
 CLine::CLine()
 {
-    startPoint = { 0, 0 };
-    endPoint = { 0, 0 };
+    startPoint = { 0, 0, 0 };
+    endPoint = { 0, 0, 0 };
     this->lineColor = Color(0.0f, 0.0f, 0.0f);
     SetLineK();
     SetLineB();
 }
-CLine::CLine(const Vector2i& p0, const Vector2i& p1, const Color color) : startPoint(p0), endPoint(p1), lineColor(color) { SetLineK(); SetLineB(); }
-CLine::CLine(const Vector2f &p0, const Vector2f &p1, const Color color)
+CLine::CLine(const Vector3f& p0, const Vector3f& p1, const Color color) : startPoint(p0), endPoint(p1), lineColor(color) { SetLineK(); SetLineB(); }
+CLine::CLine(const Vector3i &p0, const Vector3i &p1, const Color color)
 {
-    startPoint[0] = (int)(p0[0] + 0.5f), startPoint[1] = (int)(p0[1] + 0.5f);
-    endPoint[0] = (int)(p1[0] + 0.5f), endPoint[1] = (int)(p1[1] + 0.5f);
+    startPoint[0] = (float)p0[0], startPoint[1] = (float)p0[1], startPoint[2] = (float)p0[2];
+    endPoint[0] = (float)p1[0], endPoint[1] = (float)p1[1], endPoint[2] = (float)p1[2];
     this->lineColor = color;
     SetLineK();
     SetLineB();
@@ -41,7 +41,7 @@ CLine CLine::GetInstance()
     return Instance;
 }
 
-void CLine::Init(const Vector2i& p0, const Vector2i& p1, const Color color)
+void CLine::Init(const Vector3f& p0, const Vector3f& p1, const Color color)
 {
     startPoint = p0;
     endPoint = p1;
@@ -49,32 +49,32 @@ void CLine::Init(const Vector2i& p0, const Vector2i& p1, const Color color)
     //setLineK();
     //setLineB();
 }
-void CLine::Init(const Vector2f& p0, const Vector2f& p1, const Color color)
+void CLine::Init(const Vector3i& p0, const Vector3i& p1, const Color color)
 {
-    startPoint[0] = (int)(p0[0] + 0.5f), startPoint[1] = (int)(p0[1] + 0.5f);
-    endPoint[0] = (int)(p1[0] + 0.5f), endPoint[1] = (int)(p1[1] + 0.5f);
+    startPoint[0] = (float)p0[0], startPoint[1] = (float)p0[1], startPoint[2] = (float)p0[2];
+    endPoint[0] = (float)p1[0], endPoint[1] = (float)p1[1], endPoint[2] = (float)p1[2];
     this->lineColor = color;
 }
 
-void CLine::SetStartPoint(const Vector2i &point)
+void CLine::SetStartPoint(const Vector3f &point)
 {
     this->startPoint = point;
     //setLineK();
     //setLineB();
 }
-Vector2i CLine::GetStartPoint() const
+Vector3f CLine::GetStartPoint() const
 {
     return this->startPoint;
 }
 
-void CLine::SetEndPoint(const Vector2i &point)
+void CLine::SetEndPoint(const Vector3f &point)
 {
     this->endPoint = point;
     //setLineK();
     //setLineB();
 }
 
-Vector2i CLine::GetEndPoint() const
+Vector3f CLine::GetEndPoint() const
 {
     return this->endPoint;
 }
@@ -137,7 +137,8 @@ void CLine::LineTo(Image& image)
 void CLine::LineTo(Device &d)
 {
     bool steep = false;
-    if (std::abs(startPoint[0] - endPoint[0]) < std::abs(startPoint[1] - endPoint[1]))
+
+    if (std::fabs(startPoint[0] - endPoint[0]) < std::fabs(startPoint[1] - endPoint[1]))
     {
         std::swap(startPoint[0], startPoint[1]);
         std::swap(endPoint[0], endPoint[1]);
@@ -149,17 +150,19 @@ void CLine::LineTo(Device &d)
         std::swap(startPoint[0], endPoint[0]);
         std::swap(startPoint[1], endPoint[1]);
     }
-    for (int x = startPoint[0]; x <= endPoint[0]; x++)
+
+    for (float x = startPoint[0]; x <= endPoint[0]; x++)
     {
-        float t = (x - startPoint[0]) / (float)(endPoint[0] - startPoint[0]);
-        int y = startPoint[0] * (1.0 - t) + endPoint[1] * t;
+        float t = (x - startPoint[0]) / (endPoint[0] - startPoint[0]);
+        float y = startPoint[1] * (1.0 - t) + endPoint[1] * t;
+        float z = startPoint[2] * (1.0 - t) + endPoint[2] * t;
         if (steep)
         {
-            d.DrawPoint({ (float)y, (float)x });
+            d.DrawPoint({ (float)y, (float)x ,float(z)});
         }
         else
         {
-            d.DrawPoint({ (float)x, (float)y });
+            d.DrawPoint({ (float)x, (float)y, float() });
         }
     }
 }
@@ -168,7 +171,7 @@ void CLine::LineTo(Device &d)
 void CLine::LineToOptimization(Image& image)
 {
     bool steep = false;
-    if (std::abs(startPoint[0] - endPoint[0]) < std::abs(startPoint[1] - endPoint[1]))
+    if (std::fabs(startPoint[0] - endPoint[0]) < std::fabs(startPoint[1] - endPoint[1]))
     {
         std::swap(startPoint[0], startPoint[1]);
         std::swap(endPoint[0], endPoint[1]);
@@ -181,7 +184,7 @@ void CLine::LineToOptimization(Image& image)
         std::swap(startPoint[1], endPoint[1]);
     }
     int dx = endPoint[0] - startPoint[0];
-    int dy = std::abs(endPoint[1] - startPoint[1]);
+    int dy = std::fabs(endPoint[1] - startPoint[1]);
     int y = startPoint[1];
     int eps = 0;
     for (int x = startPoint[0]; x <= endPoint[0]; x++)
@@ -206,7 +209,7 @@ void CLine::LineToOptimization(Image& image)
 void CLine::LineToOptimization(Device& d)
 {
     bool steep = false;
-    if (std::abs(startPoint[0] - endPoint[0]) < std::abs(startPoint[1] - endPoint[1]))
+    if (std::fabs(startPoint[0] - endPoint[0]) < std::fabs(startPoint[1] - endPoint[1]))
     {
         std::swap(startPoint[0], startPoint[1]);
         std::swap(endPoint[0], endPoint[1]);
@@ -218,26 +221,28 @@ void CLine::LineToOptimization(Device& d)
         std::swap(startPoint[0], endPoint[0]);
         std::swap(startPoint[1], endPoint[1]);
     }
-    int dx = endPoint[0] - startPoint[0];
-    int dy = std::abs(endPoint[1] - startPoint[1]);
-    int y = startPoint[1];
-    int eps = 0;
-    for (int x = startPoint[0]; x <= endPoint[0]; x++)
+    float dx = endPoint[0] - startPoint[0];
+    float dy = std::fabs(endPoint[1] - startPoint[1]);
+    float dz = endPoint[2] - startPoint[2];
+    float y = startPoint[1];
+    float eps = 0;
+    for (float x = startPoint[0]; x <= endPoint[0]; x++)
     {
+        float z = (x - startPoint[0]) / dx * dz + startPoint[2];
         if (steep)
         {
             //d.PutPixel(y, x, lineColor);
-            d.DrawPoint({ (float)y, (float)x }, lineColor);
+            d.DrawPoint({ y, x, z }, lineColor);
         }
         else
         {
             //d.PutPixel(x, y, lineColor);
-            d.DrawPoint({ (float)x, (float)y }, lineColor);
+            d.DrawPoint({ x, y, z }, lineColor);
         }
         eps += dy;
-        if ((eps << 1) >= dx)
+        if ((eps * 2) >= dx)
         {
-            y += (endPoint[1] > startPoint[1] ? 1 : -1);
+            y += (endPoint[1] > startPoint[1] ? 1.0f : -1.0f);
             eps -= dx;
         }
     }

@@ -19,14 +19,14 @@ class CLine
 private:
     float lineK;
     float lineB;
-    Vector2i startPoint;
-    Vector2i endPoint;
+    Vector3f startPoint; // 第三维为深度值
+    Vector3f endPoint;
     Color lineColor;
 
     static CLine Instance;
     CLine();
-    CLine(const Vector2i&, const Vector2i&, Color color);
-    CLine(const Vector2f&, const Vector2f&, Color color);
+    CLine(const Vector3i&, const Vector3i&, Color color);
+    CLine(const Vector3f&, const Vector3f&, Color color);
 public:
     
     ~CLine();
@@ -37,15 +37,15 @@ public:
     void LineTo(Device &d);
     void LineToOptimization(Image&);
     void LineToOptimization(Device &d);
-    void SetStartPoint(const Vector2i &);
-    Vector2i GetStartPoint() const;
-    void SetEndPoint(const Vector2i&);
-    Vector2i GetEndPoint() const;
+    void SetStartPoint(const Vector3f &);
+    Vector3f GetStartPoint() const;
+    void SetEndPoint(const Vector3f&);
+    Vector3f GetEndPoint() const;
     void SetLineK();
     void SetLineB();
     void SetColor(Color);
-    void Init(const Vector2f&, const Vector2f&, Color color);
-    void Init(const Vector2i&, const Vector2i&, Color color);
+    void Init(const Vector3f&, const Vector3f&, Color color);
+    void Init(const Vector3i&, const Vector3i&, Color color);
 };
 
 class CTriangle
