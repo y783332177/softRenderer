@@ -255,7 +255,9 @@ void Device::DrawPoint(Vector3f point, Color color)
 void Device::DrawLine(Vector3f point0, Vector3f point1, Color color)
 {
 	CLine line = CLine::GetInstance();
-	line.Init(point0, point1, color);
+	Vector2i p0 = { (int)point0[0], (int)point0[1] };
+	Vector2i p1 = { (int)point1[0], (int)point1[1] };
+	line.Init(p0, p1, point0[2], point1[2], color);
 	line.LineToOptimization(*this);
 }
 
