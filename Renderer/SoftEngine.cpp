@@ -188,7 +188,9 @@ Device::Device(Image& _bmp)
 	: bmp(_bmp)
 {
 	backBufferSize = bmp.GetWidth() * bmp.GetHeight() * 4;
+	zBufferSize = bmp.GetWidth() * bmp.GetHeight();
 	backBuffer = new char[backBufferSize];
+	zBuffer = new float[zBufferSize];
 }
 
 char* Device::GetBackBuffer()
@@ -205,6 +207,10 @@ void Device::Clear(char r, char g, char b, char a)
 		backBuffer[index + 2] = b;
 		backBuffer[index + 3] = a;
 	}
+	for (int index = 0; index < zBufferSize; index++)
+	{
+		zBuffer[index] = -FLT_MAX;
+	}
 }
 
 void Device::Present()
@@ -213,41 +219,39 @@ void Device::Present()
 	bmp.Export("default.bmp");
 }
 
-void Device::PutPixel(int x, int y, Color color)
+void Device::PutPixel(int x, int y, float z,Color color)
 {
-	int offset = (x + (bmp.GetHeight() - 1 - y) * bmp.GetWidth()) * 4;
+	int zOffset = (x + (bmp.GetHeight() - 1 - y) * bmp.GetWidth());
+	if (zBuffer[zOffset] > z)
+		return;
 
+	int offset = zOffset * 4;
+
+	zBuffer[zOffset] = z;
 	backBuffer[offset] = (char)(color.r * 255 + 0.5f);
 	backBuffer[offset + 1] = (char)(color.g * 255 + 0.5f);
 	backBuffer[offset + 2] = (char)(color.b * 255 + 0.5f);
 	backBuffer[offset + 3] = 255; // bmp do not have alpha, but other ways for showing would use it
 }
 
-Vector2i Device::Project(Vector3f coord, Mat4x4f transMat)
+Vector3f Device::Project(Vector3f coord, Mat4x4f transMat)
 {
 	// transforming the coordinates
 	Vector4f point = TransformCoordinate(coord.xyz1(), transMat);
 	float x = (point.x / point.w) * bmp.GetWidth() / 2.0f + bmp.GetWidth() / 2.0f;
 	float y = (point.y / point.w) * bmp.GetHeight() / 2.0f + bmp.GetHeight() / 2.0f;
-	return (Vector2i((int)(x + 0.5f), (int)(y + 0.5f)));
+	return (Vector3f(x, y, point.z / point.w));
 }
 
-void Device::DrawPoint(Vector2f point, Color color)
+void Device::DrawPoint(Vector3f point, Color color)
 {
 	if (point.x >= 0 && point.y >= 0 && point.x < bmp.GetWidth() && point.y < bmp.GetHeight())
 	{
-		PutPixel((int)(point.x + 0.5f), (int)(point.y + 0.5f), color);
+		PutPixel(RoundF2I(point.x), RoundF2I(point.y), point.z, color);
 	}
 }
 
-void Device::DrawLine(Vector2i point0, Vector2i point1, Color color)
-{
-	CLine line = CLine::GetInstance();
-	line.Init(point0, point1, color);
-	line.LineToOptimization(*this);
-}
-
-void Device::DrawLine(Vector2f point0, Vector2f point1, Color color)
+void Device::DrawLine(Vector3f point0, Vector3f pointt, Color color)
 {
 	CLine line = CLine::GetInstance();
 	line.Init(point0, point1, color);

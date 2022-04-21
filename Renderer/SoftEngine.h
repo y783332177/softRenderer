@@ -105,17 +105,18 @@ public:
 	Device(Image& _bmp);
 	void Clear(char r, char g, char b, char a);
 	void Present();
-	void PutPixel(int x, int y, Color color);
-	Vector2i Project(Vector3f coord, Mat4x4f transMat);
-	void DrawPoint(Vector2f point, Color color = Color(1.0f, 1.0f, 1.0f));
-	void DrawLine(Vector2i point0, Vector2i point1, Color color = Color(1.0f, 1.0f, 1.0f));
-	void DrawLine(Vector2f point0, Vector2f point1, Color color = Color(1.0f, 1.0f, 1.0f));
+	void PutPixel(int x, int y, float z,Color color);
+	Vector3f Project(Vector3f coord, Mat4x4f transMat);
+	void DrawPoint(Vector3f point, Color color = Color(1.0f, 1.0f, 1.0f));
+	void DrawLine(Vector3f point0, Vector3f point1, Color color = Color(1.0f, 1.0f, 1.0f));
 	void Render(Camera camera, std::vector<Mesh> meshes);
 	char* GetBackBuffer();
 	~Device();
 
 private:
-	char *backBuffer;
+	char* backBuffer;
+	float* zBuffer;
 	int backBufferSize;
+	int zBufferSize;
 	Image bmp;
 };
