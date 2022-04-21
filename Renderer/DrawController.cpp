@@ -224,25 +224,25 @@ void CLine::LineToOptimization(Device& d)
     float dx = endPoint[0] - startPoint[0];
     float dy = std::fabs(endPoint[1] - startPoint[1]);
     float dz = endPoint[2] - startPoint[2];
-    float y = startPoint[1];
+    int y = startPoint[1];
     float eps = 0;
-    for (float x = startPoint[0]; x <= endPoint[0]; x++)
+    for (int x = RoundF2I(startPoint[0]); x <= RoundF2I(endPoint[0]); x++)
     {
         float z = (x - startPoint[0]) / dx * dz + startPoint[2];
         if (steep)
         {
             //d.PutPixel(y, x, lineColor);
-            d.DrawPoint({ y, x, z }, lineColor);
+            d.DrawPoint({ (float)y, (float)x, z }, lineColor);
         }
         else
         {
             //d.PutPixel(x, y, lineColor);
-            d.DrawPoint({ x, y, z }, lineColor);
+            d.DrawPoint({ (float)x, (float)y, z }, lineColor);
         }
         eps += dy;
         if ((eps * 2) >= dx)
         {
-            y += (endPoint[1] > startPoint[1] ? 1.0f : -1.0f);
+            y += (endPoint[1] > startPoint[1] ? 1 : -1);
             eps -= dx;
         }
     }

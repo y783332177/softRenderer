@@ -293,7 +293,7 @@ typedef Matrix<3, 4, float> Mat3x4f;
 
 inline Mat4x4f LookAtRH(Vector3f cameraPos, Vector3f cameraTar, Vector3f upVec)
 {
-	Vector3f cameraDir = vector_normalize(cameraPos - cameraTar);
+	Vector3f cameraDir = vector_normalize(cameraTar - cameraPos);
 	Vector3f cameraRight = vector_normalize(vector_cross(upVec, cameraDir));
 	Vector3f cameraUp = vector_cross(cameraDir, cameraRight);
 
@@ -336,6 +336,7 @@ inline Mat4x4f RotationYaw(const float yaw)
 	roYaw.SetRow(3, Vector4f(0, 0, 0, 1));
 	return roYaw;
 }
+
 inline Mat4x4f RotationPitch(const float pitch)
 {
 	Mat4x4f roPitch;

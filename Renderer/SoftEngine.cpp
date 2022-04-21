@@ -221,7 +221,8 @@ void Device::Present()
 
 void Device::PutPixel(int x, int y, float z,Color color)
 {
-	int zOffset = (x + (bmp.GetHeight() - 1 - y) * bmp.GetWidth());
+	//int zOffset = (x + (bmp.GetHeight() - 1 - y) * bmp.GetWidth());
+	int zOffset = x + y * bmp.GetWidth();
 	if (zBuffer[zOffset] > z)
 		return;
 
