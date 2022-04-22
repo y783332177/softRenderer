@@ -252,12 +252,10 @@ void Device::DrawPoint(Vector3f point, Color color)
 	}
 }
 
-void Device::DrawLine(Vector3f point0, Vector3f point1, Color color)
+void Device::DrawLine(Vector2i point0, Vector2i point1, float z0, float z1, Color color)
 {
 	CLine line = CLine::GetInstance();
-	Vector2i p0 = { (int)point0[0], (int)point0[1] };
-	Vector2i p1 = { (int)point1[0], (int)point1[1] };
-	line.Init(p0, p1, point0[2], point1[2], color);
+	line.Init(point0, point1, z0, z1, color);
 	line.LineToOptimization(*this);
 }
 
@@ -304,7 +302,7 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 			//DrawLine(pixelC, pixelA);
 			float color = 0.25f + (faceIndex % facesLength * 0.75f / facesLength);
 			faceIndex++;
-			CTriangle::DrawTriangle(*this, pixelA, pixelB, pixelC, Color((char)(rand() % 255), (char)(rand() % 255), (char)(rand() % 255)));
+			CTriangle::DrawTriangle(*this, pixelA, pixelB, pixelC, Color(color, color, color));
 		}
 	}
 }

@@ -108,7 +108,7 @@ public:
 	void PutPixel(int x, int y, float z,Color color);
 	Vector3f Project(Vector3f coord, Mat4x4f transMat);
 	void DrawPoint(Vector3f point, Color color = Color(1.0f, 1.0f, 1.0f));
-	void DrawLine(Vector3f point0, Vector3f point1, Color color = Color(1.0f, 1.0f, 1.0f));
+	void DrawLine(Vector2i point0, Vector2i point1, float z0, float z1, Color color = Color(1.0f, 1.0f, 1.0f));
 	void Render(Camera camera, std::vector<Mesh> meshes);
 	char* GetBackBuffer();
 	~Device();

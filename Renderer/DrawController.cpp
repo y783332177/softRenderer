@@ -237,7 +237,7 @@ void CLine::LineToOptimization(Device& d)
     int eps = 0;
     for (int x = startPoint[0]; x <= endPoint[0]; x++)
     {
-        float z = (float)(x - startPoint[0]) / dx * dz + startPointZ;
+        float z = (float)(x - startPoint[0]) / (float)dx * dz + startPointZ;
         if (steep)
         {
             //d.PutPixel(y, x, lineColor);
@@ -265,29 +265,35 @@ CTriangle::~CTriangle()
 {
 }
 
-void CTriangle::DrawTriangle(Device& d, Vector3f& p1, Vector3f& p2, Vector3f& p3, Color color)
+void CTriangle::DrawTriangle(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color)
 {
-    //Vector2i p1 = Vector2i(RoundF2I(_p1.x), RoundF2I(_p1.y));
-    //Vector2i p2 = Vector2i(RoundF2I(_p2.x), RoundF2I(_p2.y));
-    //Vector2i p3 = Vector2i(RoundF2I(_p3.x), RoundF2I(_p3.y));
+    Vector2i p0 = Vector2i(RoundF2I(_p0.x), RoundF2I(_p0.y));
+    Vector2i p1 = Vector2i(RoundF2I(_p1.x), RoundF2I(_p1.y));
+    Vector2i p2 = Vector2i(RoundF2I(_p2.x), RoundF2I(_p2.y));
 
-    if (p1.y == p2.y && p1.y == p3.y) return;
+    if (p0.y == p1.y && p0.y == p2.y) return;
 
+    if (p0.y > p1.y) std::swap(p0, p1);
+    if (p0.y > p2.y) std::swap(p0, p2);
     if (p1.y > p2.y) std::swap(p1, p2);
-    if (p1.y > p3.y) std::swap(p1, p3);
-    if (p2.y > p3.y) std::swap(p2, p3);
-    float totalHeight = p3.y - p1.y;
+    int totalHeight = p2.y - p0.y;
     for (int i = 0; i < totalHeight; i++)
     {
-        bool secondHalf = (i >= (p2.y - p1.y)) || (p1.y == p2.y);
-        float segmentHeight = secondHalf ? (p3.y - p2.y) : (p2.y - p1.y);
+        bool secondHalf = (i > (p1.y - p0.y)) || (p0.y == p1.y);
+        int segmentHeight = secondHalf ? (p2.y - p1.y) : (p1.y - p0.y);
         float alpha = (float)i / totalHeight;
-        float beta = (float)(i - (secondHalf ? (p2.y - p1.y) : 0)) / segmentHeight;
+        float beta = (float)(i - (secondHalf ? (p1.y - p0.y) : 0)) / segmentHeight;
         
-        Vector3f A = p1 + (p3 - p1) * alpha;
-        Vector3f B = secondHalf ? (p2 + (p3 - p2) * beta) : (p1 + (p2 - p1) * beta);
+        Vector2i A = p0 + Vector2i(RoundF2I((p2 - p0).x * alpha), RoundF2I((p2 - p0).y * alpha));
+        Vector2i B = secondHalf ? (p1 + Vector2i(RoundF2I((p2 - p1).x * beta), RoundF2I((p2 - p1).y * beta))) : (p0 + Vector2i(RoundF2I((p1 - p0).x * beta), RoundF2I((p1 - p0).y * beta)));
 
-        if (A.x > B.x) std::swap(A, B);
-        d.DrawLine(A, B, color);
+        float z0 = _p0.z + (_p2.z - _p0.z) * alpha;
+        float z1 = secondHalf ? (_p1.z + (_p2.z - _p1.z) * beta) : (_p0.z + (_p1.z - _p0.z) * beta);
+        if (A.x > B.x)
+        {
+            std::swap(A, B);
+            std::swap(z0, z1);
+        }
+        d.DrawLine(A, B, z0, z1, color);
     }
 }

@@ -16,22 +16,22 @@ int main()
 	const int height = 480;
 	Image image(width, height);
 	Device d(image);
-	//Mesh mesh("Cube", "cube.obj");
+	Mesh mesh("Cube", "cube.obj");
 	//Mesh mesh("bunny", "bunny.obj");
-	Mesh mesh("head", "head.obj");
+	//Mesh mesh("head", "head.obj");
 	
 	mesh.SetPosition(Vector3f(0., 0., 0.));
 	mesh.SetRotation(Vector3f(0., 0., 0.));
-	Camera camera(Vector3f(0.0f, 0.0f, 6.f), Vector3f(0.0f, 0.0f, 0.0f));
+	Camera camera(Vector3f(0.0f, 0.0f, 10.f), Vector3f(0.0f, 0.0f, 0.0f));
 	Window* pWindow = new Window(width, height);
-
 	for (int i = 0; i < 1; i++)
 	{
 		d.Clear(0, 0, 0, 255);
-	
 		auto r = mesh.GetRotation();
 		mesh.SetRotation(Vector3f(r.x + 0.f, r.y -0.f, r.z - 0.0f));
 		d.Render(camera, { mesh });
+		//CTriangle::DrawTriangle(d, Vector3f(0, 0, 5), Vector3f(300, 499, 6), Vector3f(600, 312, 7), Color(1.0f, 0.0f, 0.0f));
+		//CTriangle::DrawTriangle(d, Vector3f(0, 0, 4.5), Vector3f(300, 20, 5.5), Vector3f(500, 412, 6.5), Color(0.0f, 1.0f, 0.0f));
 		d.Present();
 	}
 
@@ -45,7 +45,7 @@ int main()
 
 		d.Clear(0, 0, 0, 255);
 		auto r = mesh.GetRotation();
-		mesh.SetRotation(Vector3f(r.x + 0.02f, r.y + 0.02f, r.z));
+		mesh.SetRotation(Vector3f(r.x + 0.01f, r.y + 0.01f, r.z));
 		d.Render(camera, { mesh });
 
 		if (!pWindow->ProcessMessages())
@@ -66,7 +66,7 @@ int main()
 			frame = 0;
 			t = 0.f;
 		}
-		Sleep(100000);
+		Sleep(1000000);
 	}
 
 	delete pWindow;
