@@ -16,13 +16,13 @@ int main()
 	const int height = 480;
 	Image image(width, height);
 	Device d(image);
-	Mesh mesh("Cube", "cube.obj");
+	//Mesh mesh("Cube", "cube.obj");
 	//Mesh mesh("bunny", "bunny.obj");
-	//Mesh mesh("head", "head.obj");
+	Mesh mesh("head", "head.obj");
 	
 	mesh.SetPosition(Vector3f(0., 0., 0.));
 	mesh.SetRotation(Vector3f(0., 0., 0.));
-	Camera camera(Vector3f(0.0f, 0.0f, 15.f), Vector3f(0.0f, 0.0f, 0.0f));
+	Camera camera(Vector3f(0.0f, 0.0f, 5.f), Vector3f(0.0f, 0.0f, 0.0f));
 	Window* pWindow = new Window(width, height);
 	for (int i = 0; i < 1; i++)
 	{

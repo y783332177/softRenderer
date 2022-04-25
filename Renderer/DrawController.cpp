@@ -58,8 +58,8 @@ void CLine::Init(const Vector2i &p0, const Vector2i &p1, const float _startPoint
 }
 void CLine::Init(const Vector2f &p0, const Vector2f &p1, const float _startPointZ, const float _endPointZ, const Color color)
 {
-    startPoint[0] = (int)p0[0], startPoint[1] = (int)p0[1];
-    endPoint[0] = (int)p1[0], endPoint[1] = (int)p1[1];
+    startPoint[0] = RoundF2I(p0[0]), startPoint[1] = RoundF2I(p0[1]);
+    endPoint[0] = RoundF2I(p1[0]), endPoint[1] = RoundF2I(p1[1]);
     startPointZ = _startPointZ;
     endPointZ = _endPointZ;
     this->lineColor = color;
@@ -269,7 +269,7 @@ CTriangle::~CTriangle()
 {
 }
 
-void CTriangle::DrawTriangle(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color)
+/*void CTriangle::DrawTriangle(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color)
 {
     Vector2i p0 = Vector2i(RoundF2I(_p0.x), RoundF2I(_p0.y));
     Vector2i p1 = Vector2i(RoundF2I(_p1.x), RoundF2I(_p1.y));
@@ -308,6 +308,50 @@ void CTriangle::DrawTriangle(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2
         
         Vector2i A = p0 + Vector2i(RoundF2I((p2 - p0).x * alpha), RoundF2I((p2 - p0).y * alpha));
         Vector2i B = secondHalf ? (p1 + Vector2i(RoundF2I((p2 - p1).x * beta), RoundF2I((p2 - p1).y * beta))) : (p0 + Vector2i(RoundF2I((p1 - p0).x * beta), RoundF2I((p1 - p0).y * beta)));
+
+        float z0 = _p0.z + (_p2.z - _p0.z) * alpha;
+        float z1 = secondHalf ? (_p1.z + (_p2.z - _p1.z) * beta) : (_p0.z + (_p1.z - _p0.z) * beta);
+        if (A.x > B.x)
+        {
+            std::swap(A, B);
+            std::swap(z0, z1);
+        }
+        d.DrawLine(A, B, z0, z1, color);
+    }
+}*/
+
+void CTriangle::DrawTriangle(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color)
+{
+    if (_p0.y > _p1.y)
+    {
+        std::swap(_p0, _p1);
+    }
+    if (_p0.y > _p2.y)
+    {
+        std::swap(_p0, _p2);
+    }
+    if (_p1.y > _p2.y)
+    {
+        std::swap(_p1, _p2);
+    }
+    if (std::fabs(_p0.y - _p1.y) < 1e-6 && std::fabs(_p0.y - _p2.y) < 1e-6)
+    {
+        d.DrawLine(Vector2i(RoundF2I(_p0.x), RoundF2I(_p0.y)), Vector2i(RoundF2I(_p2.x), RoundF2I(_p2.y)), _p0.z, _p2.z, color);
+        d.DrawLine(Vector2i(RoundF2I(_p1.x), RoundF2I(_p1.y)), Vector2i(RoundF2I(_p2.x), RoundF2I(_p2.y)), _p1.z, _p2.z, color);
+        d.DrawLine(Vector2i(RoundF2I(_p0.x), RoundF2I(_p0.y)), Vector2i(RoundF2I(_p1.x), RoundF2I(_p1.y)), _p0.z, _p1.z, color);
+        return;
+    }
+    float totalHeight = _p2.y - _p0.y;
+    for (float i = 0.f; i <= totalHeight; i++)
+    {
+        bool secondHalf = (i >= (_p1.y - _p0.y)) || (std::fabs(_p0.y - _p1.y) < 1e-6);
+        float segmentHeight = secondHalf ? (_p2.y - _p1.y) : (_p1.y - _p0.y);
+        float alpha = (float)i / totalHeight;
+        float beta = (float)(i - (secondHalf ? (_p1.y - _p0.y) : 0.f)) / segmentHeight;
+
+        Vector2i A = Vector2i(RoundF2I(_p0.x), RoundF2I(_p0.y)) + Vector2i(RoundF2I((_p2 - _p0).x * alpha), RoundF2I((_p2 - _p0).y * alpha));
+        Vector2i B = secondHalf ? (Vector2i(RoundF2I(_p1.x), RoundF2I(_p1.y)) + Vector2i(RoundF2I((_p2 - _p1).x * beta), RoundF2I((_p2 - _p1).y * beta))) 
+            : (Vector2i(RoundF2I(_p0.x), RoundF2I(_p0.y)) + Vector2i(RoundF2I((_p1 - _p0).x * beta), RoundF2I((_p1 - _p0).y * beta)));
 
         float z0 = _p0.z + (_p2.z - _p0.z) * alpha;
         float z1 = secondHalf ? (_p1.z + (_p2.z - _p1.z) * beta) : (_p0.z + (_p1.z - _p0.z) * beta);
