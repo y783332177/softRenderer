@@ -313,12 +313,15 @@ void CTriangle::DrawTriangleBox(Device& d, Vector3f _p0, Vector3f _p1, Vector3f 
         }
     }
     Vector3f P;
-    for (P.x = bboxMin.x - 1; P.x < bboxMax.x + 1; P.x += 0.5f)
+    for (P.x = (int)bboxMin.x - 1.f; P.x < bboxMax.x + 2; P.x += 1.f)
     {
-        for (P.y = bboxMin.y - 1; P.y < bboxMax.y + 1; P.y += 0.5f)
+        for (P.y = (int)bboxMin.y - 1.f; P.y < bboxMax.y + 2; P.y += 1.f)
         {
-            Vector3f screenCoord = barycentric(pts[0], pts[1], pts[2], P);
-            if (screenCoord.x < 0 || screenCoord.y < 0 || screenCoord.z < 0) continue;
+            Vector3f screenCoord = barycentric(pts[0], pts[1], pts[2], { (int)P.x + 0.5f,(int)P.y + 0.5f ,P.z });
+            if (screenCoord.x < 0 || screenCoord.y < 0 || screenCoord.z < 0)
+            {  
+                continue;
+            }
             P.z = 0;
             for (int i = 0; i < 3; i++)
             {

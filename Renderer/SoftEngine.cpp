@@ -241,14 +241,15 @@ Vector3f Device::Project(Vector3f coord, Mat4x4f transMat)
 	Vector4f point = TransformCoordinate(coord.xyz1(), transMat);
 	float x = (point.x / point.w) * bmp.GetWidth() / 2.0f + bmp.GetWidth() / 2.0f;
 	float y = (point.y / point.w) * bmp.GetHeight() / 2.0f + bmp.GetHeight() / 2.0f;
-	return (Vector3f(x, y, point.z / point.w));
+	return (Vector3f(x, y, point.z));
 }
 
 void Device::DrawPoint(Vector3f point, Color color)
 {
 	if (point.x >= 0 && point.y >= 0 && point.x < bmp.GetWidth() && point.y < bmp.GetHeight())
 	{
-		PutPixel(RoundF2I(point.x), RoundF2I(point.y), point.z, color);
+		//PutPixel(RoundF2I(point.x), RoundF2I(point.y), point.z, color);
+		PutPixel(point.x, point.y, point.z, color);
 	}
 }
 
@@ -297,12 +298,13 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 			auto pixelA = Project(vertexA, transformMatrix);
 			auto pixelB = Project(vertexB, transformMatrix);
 			auto pixelC = Project(vertexC, transformMatrix);
-			//DrawLine(pixelA, pixelB);
-			//DrawLine(pixelB, pixelC);
-			//DrawLine(pixelC, pixelA);
 			float color = 0.25f + (faceIndex % facesLength * 0.75f / facesLength);
+			DrawLine({ RoundF2I(pixelA.x), RoundF2I(pixelA.y) }, { RoundF2I(pixelB.x), RoundF2I(pixelB.y) }, pixelA.z, pixelB.z, Color(color, color, color));
+			DrawLine({ RoundF2I(pixelB.x), RoundF2I(pixelB.y) }, { RoundF2I(pixelC.x), RoundF2I(pixelC.y) }, pixelB.z, pixelC.z, Color(color, color, color));
+			DrawLine({ RoundF2I(pixelC.x), RoundF2I(pixelC.y) }, { RoundF2I(pixelA.x), RoundF2I(pixelA.y) }, pixelC.z, pixelA.z, Color(color, color, color));
 			faceIndex++;
 			CTriangle::DrawTriangleBox(*this, pixelA, pixelB, pixelC, Color(color, color, color));
+			//CTriangle::DrawTriangle(*this, pixelA, pixelB, pixelC, Color(color, color, color));
 		}
 	}
 }
