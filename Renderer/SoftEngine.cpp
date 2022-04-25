@@ -302,7 +302,7 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 			//DrawLine(pixelC, pixelA);
 			float color = 0.25f + (faceIndex % facesLength * 0.75f / facesLength);
 			faceIndex++;
-			CTriangle::DrawTriangle(*this, pixelA, pixelB, pixelC, Color(color, color, color));
+			CTriangle::DrawTriangleBox(*this, pixelA, pixelB, pixelC, Color(color, color, color));
 		}
 	}
 }

@@ -297,3 +297,34 @@ void CTriangle::DrawTriangle(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2
         d.DrawLine(A, B, z0, z1, color);
     }
 }
+
+void CTriangle::DrawTriangleBox(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color)
+{
+    Vector2f bboxMin(FLT_MAX, FLT_MAX);
+    Vector2f bboxMax(-FLT_MAX, -FLT_MAX);
+    Vector2f clamp(d.GetWidth() - 1, d.GetHeight() - 1);
+    Vector3f pts[3] = { _p0, _p1, _p2 };
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 2; j++)
+        {
+            bboxMin[j] = std::max(0.f, std::min(bboxMin[j], pts[i][j]));
+            bboxMax[j] = std::min(clamp[j], std::max(bboxMax[j], pts[i][j]));
+        }
+    }
+    Vector3f P;
+    for (P.x = bboxMin.x - 1; P.x < bboxMax.x + 1; P.x += 0.5f)
+    {
+        for (P.y = bboxMin.y - 1; P.y < bboxMax.y + 1; P.y += 0.5f)
+        {
+            Vector3f screenCoord = barycentric(pts[0], pts[1], pts[2], P);
+            if (screenCoord.x < 0 || screenCoord.y < 0 || screenCoord.z < 0) continue;
+            P.z = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                P.z += pts[i][2] * screenCoord[i];
+            }
+            d.DrawPoint(P, color);
+        }
+    }
+}

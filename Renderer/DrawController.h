@@ -56,6 +56,7 @@ public:
     CTriangle();
     ~CTriangle();
     static void DrawTriangle(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color);
+    static void DrawTriangleBox(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color);
 };
 
 

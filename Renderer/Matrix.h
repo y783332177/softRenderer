@@ -355,4 +355,20 @@ inline Mat4x4f RotationRoll(const float roll)
 	roRoll.SetRow(3, Vector4f(0, 0, 0, 1));
 	return roRoll;
 }
+
+inline Vector3f barycentric(Vector3f A, Vector3f B, Vector3f C, Vector3f P)
+{
+	Vector3f s[2];
+	for (int i = 1; i >= 0; i--)
+	{
+		s[i][0] = C[i] - A[i];
+		s[i][1] = B[i] - A[i];
+		s[i][2] = A[i] - P[i];
+	}
+	Vector3f u = vector_cross(s[0], s[1]);
+	if (std::fabs(u[2]) > 1e-2)
+		return Vector3f(1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z);
+	return Vector3f(-1, 1, 1);
+}
+
 #endif
