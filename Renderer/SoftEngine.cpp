@@ -248,8 +248,8 @@ void Device::DrawPoint(Vector3f point, Color color)
 {
 	if (point.x >= 0 && point.y >= 0 && point.x < bmp.GetWidth() && point.y < bmp.GetHeight())
 	{
-		//PutPixel(RoundF2I(point.x), RoundF2I(point.y), point.z, color);
-		PutPixel(point.x, point.y, point.z, color);
+		PutPixel(RoundF2I(point.x), RoundF2I(point.y), point.z, color);
+		//PutPixel(point.x, point.y, point.z, color);
 	}
 }
 
@@ -264,7 +264,7 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 {
 	// MVP matrix first
 	auto viewMatrix = LookAtRH(camera.GetPosition(), camera.GetTarget(), Vector3f(0.0f, 1.0f, 0.0f));
-	auto projectionMatrix = PerspectiveFovRH(0.5f, (float)bmp.GetWidth() / bmp.GetHeight(), 0.5f, 20.0f);
+	auto projectionMatrix = PerspectiveFovRH(0.5f, (float)bmp.GetWidth() / bmp.GetHeight(), 0.1f, 8.0f);
 
 	for (Mesh mesh : meshes)
 	{
@@ -298,10 +298,7 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 			auto pixelA = Project(vertexA, transformMatrix);
 			auto pixelB = Project(vertexB, transformMatrix);
 			auto pixelC = Project(vertexC, transformMatrix);
-			float color = 0.25f + (faceIndex % facesLength * 0.75f / facesLength);
-			DrawLine({ RoundF2I(pixelA.x), RoundF2I(pixelA.y) }, { RoundF2I(pixelB.x), RoundF2I(pixelB.y) }, pixelA.z, pixelB.z, Color(color, color, color));
-			DrawLine({ RoundF2I(pixelB.x), RoundF2I(pixelB.y) }, { RoundF2I(pixelC.x), RoundF2I(pixelC.y) }, pixelB.z, pixelC.z, Color(color, color, color));
-			DrawLine({ RoundF2I(pixelC.x), RoundF2I(pixelC.y) }, { RoundF2I(pixelA.x), RoundF2I(pixelA.y) }, pixelC.z, pixelA.z, Color(color, color, color));
+			float color = 0.4f + (pixelA.z + pixelB.z + pixelC.z + 15.f) / 6.f;
 			faceIndex++;
 			CTriangle::DrawTriangleBox(*this, pixelA, pixelB, pixelC, Color(color, color, color));
 			//CTriangle::DrawTriangle(*this, pixelA, pixelB, pixelC, Color(color, color, color));
