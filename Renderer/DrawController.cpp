@@ -218,10 +218,13 @@ void CLine::LineToOptimization(Image& image)
 void CLine::LineToOptimization(Device& d)
 {
     bool steep = false;
+    if(startPoint == endPoint)
+        d.DrawPoint({ (float)startPoint.x, (float)startPoint.y, startPointZ }, lineColor);
     if (std::abs(startPoint[0] - endPoint[0]) < std::abs(startPoint[1] - endPoint[1]))
     {
         std::swap(startPoint[0], startPoint[1]);
         std::swap(endPoint[0], endPoint[1]);
+        std::swap(startPointZ, endPointZ);
         steep = true;
     }
 
@@ -229,6 +232,7 @@ void CLine::LineToOptimization(Device& d)
     {
         std::swap(startPoint[0], endPoint[0]);
         std::swap(startPoint[1], endPoint[1]);
+        std::swap(startPointZ, endPointZ);
     }
     int dx = endPoint[0] - startPoint[0];
     int dy = std::abs(endPoint[1] - startPoint[1]);
@@ -271,15 +275,33 @@ void CTriangle::DrawTriangle(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2
     Vector2i p1 = Vector2i(RoundF2I(_p1.x), RoundF2I(_p1.y));
     Vector2i p2 = Vector2i(RoundF2I(_p2.x), RoundF2I(_p2.y));
 
-    if (p0.y == p1.y && p0.y == p2.y) return;
 
-    if (p0.y > p1.y) std::swap(p0, p1);
-    if (p0.y > p2.y) std::swap(p0, p2);
-    if (p1.y > p2.y) std::swap(p1, p2);
+    if (p0.y > p1.y)
+    {
+        std::swap(p0, p1);
+        std::swap(_p0, _p1);
+    }
+    if (p0.y > p2.y)
+    {
+        std::swap(p0, p2);
+        std::swap(_p0, _p2);
+    }
+    if (p1.y > p2.y)
+    {
+        std::swap(p1, p2);
+        std::swap(_p1, _p2);
+    }
+    if (p0.y == p1.y && p0.y == p2.y)
+    {
+        d.DrawLine(p0, p2, _p0.z, _p2.z, color);
+        d.DrawLine(p1, p2, _p1.z, _p2.z, color);
+        d.DrawLine(p0, p1, _p0.z, _p1.z, color);
+        return;
+    }
     int totalHeight = p2.y - p0.y;
     for (int i = 0; i < totalHeight; i++)
     {
-        bool secondHalf = (i > (p1.y - p0.y)) || (p0.y == p1.y);
+        bool secondHalf = (i >= (p1.y - p0.y)) || (p0.y == p1.y);
         int segmentHeight = secondHalf ? (p2.y - p1.y) : (p1.y - p0.y);
         float alpha = (float)i / totalHeight;
         float beta = (float)(i - (secondHalf ? (p1.y - p0.y) : 0)) / segmentHeight;
