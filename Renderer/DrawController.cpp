@@ -266,7 +266,7 @@ void CLine::LineToOptimization(Device& d, Vector2f p0, Vector2f p1)
     bool steep = false;
     if (startPoint == endPoint)
         d.DrawPoint({ p0.x, p0.y, startPointZ }, lineColor);
-    if (std::abs(p0[0] - p1[0]) < std::abs(p0[1] - p1[1]))
+    if (std::fabs(p0[0] - p1[0]) < std::fabs(p0[1] - p1[1]))
     {
         std::swap(p0[0], p0[1]);
         std::swap(p1[0], p1[1]);
@@ -395,9 +395,9 @@ void CTriangle::DrawTriangle(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2
         float alpha = (float)i / totalHeight;
         float beta = (float)(i - (secondHalf ? (_p1.y - _p0.y) : 0.f)) / segmentHeight;
 
-        Vector2f A = Vector2f((_p0.x), (_p0.y)) + Vector2f(((_p2 - _p0).x * alpha), ((_p2 - _p0).y * alpha));
-        Vector2f B = secondHalf ? (Vector2f((_p1.x), (_p1.y)) + Vector2f(((_p2 - _p1).x * beta), ((_p2 - _p1).y * beta))) 
-            : (Vector2f((_p0.x), (_p0.y)) + Vector2f(((_p1 - _p0).x * beta), ((_p1 - _p0).y * beta)));
+        Vector2f A = Vector2f((_p0.x), (_p0.y)) + Vector2f(((_p2 - _p0).x * alpha), i);
+        Vector2f B = secondHalf ? Vector2f(_p1.x, _p0.y) + Vector2f((_p2 - _p1).x * beta, i) 
+            : Vector2f(_p0.x, _p0.y) + Vector2f((_p1 - _p0).x * beta, i);
 
         float z0 = _p0.z + (_p2.z - _p0.z) * alpha;
         float z1 = secondHalf ? (_p1.z + (_p2.z - _p1.z) * beta) : (_p0.z + (_p1.z - _p0.z) * beta);
@@ -406,7 +406,80 @@ void CTriangle::DrawTriangle(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2
             std::swap(A, B);
             std::swap(z0, z1);
         }
-        d.DrawLine(A, B, z0, z1, color);
+        for (float j = A.x; j < B.x; j++)
+        {
+            float z = z0 + i / (B.x - A.x) * (z1 - z0);
+            d.DrawPoint(Vector3f(j, i + _p0.y, z), color);
+        }
+    }
+}
+
+void CTriangle::ProcessScanLine(Device& d, int y, Vector3f pa, Vector3f pb, Vector3f pc, Vector3f pd, Color color)
+{
+    auto gradient1 = pa.y != pb.y ? (y - pa.y) / (pb.y - pa.y) : 1;
+    auto gradient2 = pc.y != pd.y ? (y - pc.y) / (pd.y - pc.y) : 1;
+
+    int sx = (int)Interpolate(pa.x, pb.x, gradient1);
+    int ex = (int)Interpolate(pc.x, pd.x, gradient2);
+
+    float z1 = Interpolate(pa.z, pb.z, gradient1);
+    float z2 = Interpolate(pc.z, pd.z, gradient2);
+
+    float decent = (float)(ex - sx);
+    for (int x = sx; x < ex; x++)
+    {
+        float gradient = (x - sx) / decent;
+        float z = Interpolate(z1, z2, gradient);
+
+        d.DrawPoint(Vector3f(x, y, z), color);
+    }
+}
+
+void CTriangle::DrawTriangleOptimization(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color)
+{
+    if (_p0.y > _p1.y)
+    {
+        std::swap(_p0, _p1);
+    }
+    if (_p0.y > _p2.y)
+    {
+        std::swap(_p0, _p2);
+    }
+    if (_p1.y > _p2.y)
+    {
+        std::swap(_p1, _p2);
+    }
+
+    float dP0P1, dP0P2;
+    if (std::fabs(_p1.y - _p0.y) > 1e-6)
+        dP0P1 = (_p1.x - _p0.x) / (_p1.y - _p0.y);
+    else
+        dP0P1 = 0;
+
+    if (std::fabs(_p2.y - _p1.y) > 1e-6)
+        dP0P2 = (_p2.x - _p0.x) / (_p2.y - _p0.y);
+    else
+        dP0P2 = 0;
+
+    if (dP0P1 > dP0P2)
+    {
+        for (int y = _p0.y; y <= _p2.y; y++)
+        {
+            if (y < _p1.y)
+                ProcessScanLine(d, y, _p0, _p2, _p0, _p1, color);
+            else
+                ProcessScanLine(d, y, _p0, _p2, _p1, _p2, color);
+        }
+    }
+    else
+    {
+        for (int y = _p0.y; y <= _p2.y; y++)
+        {
+            if (y < _p1.y)
+                ProcessScanLine(d, y, _p0, _p1, _p0, _p2, color);
+            else
+                ProcessScanLine(d, y, _p1, _p2, _p0, _p2, color);
+        }
     }
 }
 
