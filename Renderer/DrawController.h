@@ -39,6 +39,7 @@ public:
     void LineTo(Device &d);
     void LineToOptimization(Image&);
     void LineToOptimization(Device &d);
+    void LineToOptimization(Device &d, Vector2f , Vector2f);
     void SetStartPoint(const Vector2i &);
     Vector2i GetStartPoint() const;
     void SetEndPoint(const Vector2i &);

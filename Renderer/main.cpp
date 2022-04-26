@@ -66,7 +66,7 @@ int main()
 			frame = 0;
 			t = 0.f;
 		}
-		//Sleep(1000000);
+		Sleep(1000000);
 	}
 
 	delete pWindow;

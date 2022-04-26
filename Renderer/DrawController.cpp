@@ -261,6 +261,52 @@ void CLine::LineToOptimization(Device& d)
     }
 }
 
+void CLine::LineToOptimization(Device& d, Vector2f p0, Vector2f p1)
+{
+    bool steep = false;
+    if (startPoint == endPoint)
+        d.DrawPoint({ p0.x, p0.y, startPointZ }, lineColor);
+    if (std::abs(p0[0] - p1[0]) < std::abs(p0[1] - p1[1]))
+    {
+        std::swap(p0[0], p0[1]);
+        std::swap(p1[0], p1[1]);
+        std::swap(startPointZ, endPointZ);
+        steep = true;
+    }
+
+    if (p0[0] > p1[0])
+    {
+        std::swap(p0[0], p1[0]);
+        std::swap(p0[1], p1[1]);
+        std::swap(startPointZ, endPointZ);
+    }
+    int dx = p1[0] - p0[0];
+    int dy = std::abs(p1[1] - p0[1]);
+    float dz = endPointZ - startPointZ;
+    int y = (p0[1]);
+    int eps = 0;
+    for (int x = (p0[0]); x <= (p1[0]); x++)
+    {
+        float z = (float)(x - p0[0]) / (float)(p1[0] - p0[0]) * dz + startPointZ;
+        if (steep)
+        {
+            //d.PutPixel(y, x, lineColor);
+            d.DrawPoint({ (float)y, (float)x, z }, lineColor);
+        }
+        else
+        {
+            //d.PutPixel(x, y, lineColor);
+            d.DrawPoint({ (float)x, (float)y, z }, lineColor);
+        }
+        eps += dy;
+        if ((eps << 1) >= dx)
+        {
+            y += (endPoint[1] > startPoint[1] ? 1 : -1);
+            eps -= dx;
+        }
+    }
+}
+
 CTriangle::CTriangle()
 {
 }
@@ -336,9 +382,9 @@ void CTriangle::DrawTriangle(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2
     }
     if (std::fabs(_p0.y - _p1.y) < 1e-6 && std::fabs(_p0.y - _p2.y) < 1e-6)
     {
-        d.DrawLine(Vector2i(RoundF2I(_p0.x), RoundF2I(_p0.y)), Vector2i(RoundF2I(_p2.x), RoundF2I(_p2.y)), _p0.z, _p2.z, color);
-        d.DrawLine(Vector2i(RoundF2I(_p1.x), RoundF2I(_p1.y)), Vector2i(RoundF2I(_p2.x), RoundF2I(_p2.y)), _p1.z, _p2.z, color);
-        d.DrawLine(Vector2i(RoundF2I(_p0.x), RoundF2I(_p0.y)), Vector2i(RoundF2I(_p1.x), RoundF2I(_p1.y)), _p0.z, _p1.z, color);
+        d.DrawLine(Vector2f((_p0.x), (_p0.y)), Vector2f((_p2.x), (_p2.y)), _p0.z, _p2.z, color);
+        d.DrawLine(Vector2f((_p1.x), (_p1.y)), Vector2f((_p2.x), (_p2.y)), _p1.z, _p2.z, color);
+        d.DrawLine(Vector2f((_p0.x), (_p0.y)), Vector2f((_p1.x), (_p1.y)), _p0.z, _p1.z, color);
         return;
     }
     float totalHeight = _p2.y - _p0.y;
@@ -349,9 +395,9 @@ void CTriangle::DrawTriangle(Device& d, Vector3f _p0, Vector3f _p1, Vector3f _p2
         float alpha = (float)i / totalHeight;
         float beta = (float)(i - (secondHalf ? (_p1.y - _p0.y) : 0.f)) / segmentHeight;
 
-        Vector2i A = Vector2i(RoundF2I(_p0.x), RoundF2I(_p0.y)) + Vector2i(RoundF2I((_p2 - _p0).x * alpha), RoundF2I((_p2 - _p0).y * alpha));
-        Vector2i B = secondHalf ? (Vector2i(RoundF2I(_p1.x), RoundF2I(_p1.y)) + Vector2i(RoundF2I((_p2 - _p1).x * beta), RoundF2I((_p2 - _p1).y * beta))) 
-            : (Vector2i(RoundF2I(_p0.x), RoundF2I(_p0.y)) + Vector2i(RoundF2I((_p1 - _p0).x * beta), RoundF2I((_p1 - _p0).y * beta)));
+        Vector2f A = Vector2f((_p0.x), (_p0.y)) + Vector2f(((_p2 - _p0).x * alpha), ((_p2 - _p0).y * alpha));
+        Vector2f B = secondHalf ? (Vector2f((_p1.x), (_p1.y)) + Vector2f(((_p2 - _p1).x * beta), ((_p2 - _p1).y * beta))) 
+            : (Vector2f((_p0.x), (_p0.y)) + Vector2f(((_p1 - _p0).x * beta), ((_p1 - _p0).y * beta)));
 
         float z0 = _p0.z + (_p2.z - _p0.z) * alpha;
         float z1 = secondHalf ? (_p1.z + (_p2.z - _p1.z) * beta) : (_p0.z + (_p1.z - _p0.z) * beta);

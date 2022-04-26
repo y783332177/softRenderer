@@ -224,7 +224,11 @@ void Device::PutPixel(int x, int y, float z,Color color)
 	//int zOffset = (x + (bmp.GetHeight() - 1 - y) * bmp.GetWidth());
 	int zOffset = x + y * bmp.GetWidth();
 	if (zBuffer[zOffset] > z)
+	{
+		//std::cout << x << " " << y << " " << z << " " << zBuffer[zOffset] << std::endl;
 		return;
+	}
+		
 
 	int offset = zOffset * 4;
 
@@ -258,6 +262,13 @@ void Device::DrawLine(Vector2i point0, Vector2i point1, float z0, float z1, Colo
 	CLine line = CLine::GetInstance();
 	line.Init(point0, point1, z0, z1, color);
 	line.LineToOptimization(*this);
+}
+
+void Device::DrawLine(Vector2f point0, Vector2f point1, float z0, float z1, Color color)
+{
+	CLine line = CLine::GetInstance();
+	line.Init(point0, point1, z0, z1, color);
+	line.LineToOptimization(*this, point0, point1);
 }
 
 void Device::Render(Camera camera, std::vector<Mesh> meshes)
