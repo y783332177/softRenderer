@@ -271,6 +271,75 @@ void Device::DrawLine(Vector2f point0, Vector2f point1, float z0, float z1, Colo
 	line.LineToOptimization(*this, point0, point1);
 }
 
+void Device::ProcessScanLine(int y, Vector3f pa, Vector3f pb, Vector3f pc, Vector3f pd, Color color)
+{
+	auto gradient1 = pa.y != pb.y ? (y - pa.y) / (pb.y - pa.y) : 1;
+	auto gradient2 = pc.y != pd.y ? (y - pc.y) / (pd.y - pc.y) : 1;
+
+	int sx = (int)Interpolate(pa.x, pb.x, gradient1);
+	int ex = (int)Interpolate(pc.x, pd.x, gradient2);
+
+	float z1 = Interpolate(pa.z, pb.z, gradient1);
+	float z2 = Interpolate(pc.z, pd.z, gradient2);
+
+	float decent = (float)(ex - sx);
+	for (int x = sx; x < ex; x++)
+	{
+		float gradient = (x - sx) / decent;
+		float z = Interpolate(z1, z2, gradient);
+
+		DrawPoint(Vector3f(x, y, z), color);
+	}
+}
+
+void Device::DrawTriangle(Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color)
+{
+	if (_p0.y > _p1.y)
+	{
+		std::swap(_p0, _p1);
+	}
+	if (_p0.y > _p2.y)
+	{
+		std::swap(_p0, _p2);
+	}
+	if (_p1.y > _p2.y)
+	{
+		std::swap(_p1, _p2);
+	}
+
+	float dP0P1, dP0P2;
+	if (std::fabs(_p1.y - _p0.y) > 1e-6)
+		dP0P1 = (_p1.x - _p0.x) / (_p1.y - _p0.y);
+	else
+		dP0P1 = 0;
+
+	if (std::fabs(_p2.y - _p1.y) > 1e-6)
+		dP0P2 = (_p2.x - _p0.x) / (_p2.y - _p0.y);
+	else
+		dP0P2 = 0;
+
+	if (dP0P1 > dP0P2)
+	{
+		for (int y = _p0.y; y <= _p2.y; y++)
+		{
+			if (y < _p1.y)
+				ProcessScanLine(y, _p0, _p2, _p0, _p1, color);
+			else
+				ProcessScanLine(y, _p0, _p2, _p1, _p2, color);
+		}
+	}
+	else
+	{
+		for (int y = _p0.y; y <= _p2.y; y++)
+		{
+			if (y < _p1.y)
+				ProcessScanLine(y, _p0, _p1, _p0, _p2, color);
+			else
+				ProcessScanLine(y, _p1, _p2, _p0, _p2, color);
+		}
+	}
+}
+
 void Device::Render(Camera camera, std::vector<Mesh> meshes)
 {
 	// MVP matrix first
@@ -312,7 +381,7 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 			float color = 0.4f + (pixelA.z + pixelB.z + pixelC.z + 15.f) / 6.f;
 			faceIndex++;
 			//CTriangle::DrawTriangleBox(*this, pixelA, pixelB, pixelC, Color(color, color, color));
-			CTriangle::DrawTriangleOptimization(*this, pixelA, pixelB, pixelC, Color(rand()%255, color, color));
+			DrawTriangle(pixelA, pixelB, pixelC, Color(rand()%255, color, color));
 		}
 	}
 }

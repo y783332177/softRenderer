@@ -110,6 +110,8 @@ public:
 	void DrawPoint(Vector3f point, Color color = Color(1.0f, 1.0f, 1.0f));
 	void DrawLine(Vector2i point0, Vector2i point1, float z0, float z1, Color color = Color(1.0f, 1.0f, 1.0f));
 	void DrawLine(Vector2f point0, Vector2f point1, float z0, float z1, Color color = Color(1.0f, 1.0f, 1.0f));
+	void ProcessScanLine(int y, Vector3f pa, Vector3f pb, Vector3f pc, Vector3f pd, Color color);
+	void DrawTriangle(Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color);
 	void Render(Camera camera, std::vector<Mesh> meshes);
 	int GetWidth() { return bmp.GetWidth(); };
 	int GetHeight() { return bmp.GetHeight(); };
