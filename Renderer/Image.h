@@ -33,6 +33,7 @@ public:
 	int GetHeight() const { return m_height; };
 	void WriteBmp(const char* buffer, const int bufferSize);
 
+	void Read(const char* path);
 	void Export(const char* path);
 
 private:

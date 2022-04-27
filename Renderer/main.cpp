@@ -15,6 +15,10 @@ int main()
 	const int width = 640;
 	const int height = 480;
 	Image image(width, height);
+	Image copy(width, height);
+	copy.Read("image.bmp");
+	copy.Export("copy.bmp");
+	return 0;
 	Device d(image);
 	//Mesh mesh("Cube", "cube.obj");
 	//Mesh mesh("bunny", "bunny.obj");

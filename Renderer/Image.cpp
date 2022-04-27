@@ -57,9 +57,64 @@ void Image::WriteBmp(const char* buffer, const int bufferSize)
 		for (int x = 0; x < m_width; x++)
 		{
 			int offset = (y * m_width + x) * 4;
-			SetColor(Color(buffer[offset], buffer[offset + 1], buffer[offset + 2]), x, y);
+			SetColor(Color(buffer[offset + 2], buffer[offset + 1], buffer[offset]), x, y);
 		}
 	}
+}
+
+void Image::Read(const char* path)
+{
+	std::ifstream f;
+	f.open(path, std::ios::in | std::ios::binary);
+
+	if (!f.is_open())
+	{
+		std::cout << "file could not be opened\n";
+		return;
+	}
+	const int fileHeaderSize = 14;
+	const int informationHeaderSize = 40;
+
+	unsigned char fileHeader[fileHeaderSize];
+	f.read(reinterpret_cast<char*>(fileHeader), fileHeaderSize);
+
+	if (fileHeader[0] != 'B' || fileHeader[1] != 'M')
+	{
+		std::cout << "The specified path is not a bitmap image" << std::endl;
+		f.close();
+		return;
+	}
+
+	unsigned char informationHeader[informationHeaderSize];
+	f.read(reinterpret_cast<char*>(informationHeader), informationHeaderSize);
+
+	int fileSize = fileHeader[2] + (fileHeader[3] << 8) + (fileHeader[4] << 16) + (fileHeader[5] << 24);
+	m_width = informationHeader[4] + (informationHeader[5] << 8) + (informationHeader[6] << 16) + (informationHeader[7] << 24);
+	m_height = informationHeader[8] + (informationHeader[9] << 8) + (informationHeader[10] << 16) + (informationHeader[11] << 24);
+
+	area = m_width * m_height;
+	m_colors.resize(area);
+
+	const int paddingAmount = ((4 - (m_width * 3) % 4) % 4);
+
+	for (int y = 0; y < m_height; y++)
+	{
+		for (int x = 0; x < m_width; x++)
+		{
+			unsigned char color[3];
+			f.read(reinterpret_cast<char*>(color), 3);
+
+			m_colors[y * m_width + x].r = static_cast<float>(color[2] / 255.0f);
+			m_colors[y * m_width + x].g = static_cast<float>(color[1] / 255.0f);
+			m_colors[y * m_width + x].b = static_cast<float>(color[0] / 255.0f);
+		}
+
+		f.ignore(paddingAmount);
+	}
+
+	f.close();
+
+	std::cout << "File read\n";
 }
 
 void Image::Export(const char* path)
@@ -70,6 +125,7 @@ void Image::Export(const char* path)
 	if (!f.is_open())
 	{
 		std::cout << "File could not be opened\n";
+		return;
 	}
 
 	unsigned char bmpPad[3] = { 0, 0, 0 };
@@ -143,7 +199,7 @@ void Image::Export(const char* path)
 			unsigned char g = static_cast<unsigned char>(tempColor.g * 255.0f);
 			unsigned char b = static_cast<unsigned char>(tempColor.b * 255.0f);
 
-			unsigned char color[] = { r, g, b };
+			unsigned char color[] = { b, g, r };
 
 			f.write(reinterpret_cast<char*>(color), 3);
 		}
