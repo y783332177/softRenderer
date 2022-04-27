@@ -143,7 +143,7 @@ void Image::Export(const char* path)
 			unsigned char g = static_cast<unsigned char>(tempColor.g * 255.0f);
 			unsigned char b = static_cast<unsigned char>(tempColor.b * 255.0f);
 
-			unsigned char color[] = { b, g ,r };
+			unsigned char color[] = { r, g, b };
 
 			f.write(reinterpret_cast<char*>(color), 3);
 		}

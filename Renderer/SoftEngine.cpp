@@ -233,9 +233,9 @@ void Device::PutPixel(int x, int y, float z,Color color)
 	int offset = zOffset * 4;
 
 	zBuffer[zOffset] = z;
-	backBuffer[offset] = (char)(color.r * 255);
+	backBuffer[offset] = (char)(color.b * 255);
 	backBuffer[offset + 1] = (char)(color.g * 255);
-	backBuffer[offset + 2] = (char)(color.b * 255);
+	backBuffer[offset + 2] = (char)(color.r * 255);
 	backBuffer[offset + 3] = 255; // bmp do not have alpha, but other ways for showing would use it
 }
 
@@ -381,7 +381,7 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 			float color = 0.4f + (pixelA.z + pixelB.z + pixelC.z + 15.f) / 6.f;
 			faceIndex++;
 			//CTriangle::DrawTriangleBox(*this, pixelA, pixelB, pixelC, Color(color, color, color));
-			DrawTriangle(pixelA, pixelB, pixelC, Color(rand()%255, color, color));
+			DrawTriangle(pixelA, pixelB, pixelC, Color(1.f, 0, 0));
 		}
 	}
 }
