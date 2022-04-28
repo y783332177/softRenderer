@@ -21,11 +21,20 @@ private:
 	Vector3f target;
 };
 
+struct Vertex
+{
+	Vector3f normal;
+	Vector3f coordinates;
+	Vector3f wordCoordinates;
+	Vector2f tCoordinates;
+};
+
 struct Face
 {
 	int A;
 	int B;
 	int C;
+	Vector2f tCoordinates[3];
 	
 	Face() : A(0), B(1), C(2) {};
 	Face(int _A, int _B, int _C) : A(_A), B(_B), C(_C) {};
@@ -64,6 +73,13 @@ struct Material
 	std::string map_bump;
 };
 
+struct ScanLineData
+{
+	int currentY;
+	float ua, ub, uc, ud;
+	float va, vb, vc, vd;
+};
+
 class Mesh
 {
 public:
@@ -78,12 +94,14 @@ public:
 	const std::vector<Vector3f>& GetVertices() const { return vertices; };
 	Face GetFace(int index) const;
 	const std::vector<Face>& GetFaces() const { return faces; };
+	Image& GetTexture() { return texture; };
 
 	void SetName(const std::string& _name) { name = _name; };
 	void SetPosition(const Vector3f& _position) { position = _position; };
 	void SetRotation(const Vector3f& _rotation) { rotation = _rotation; };
 	void SetVertices(int index, const Vector3f& vertice);
 	void SetFaces(int index, const Face& face);
+	void SetTexture(const Image _texture);
 
 	void InsertVertice(const Vector3f& vertice);
 	void InsertFace(const Face& face);
@@ -92,6 +110,7 @@ public:
 	~Mesh();
 
 private:
+	Image texture;
 	std::string name;
 	std::vector<Vector3f> vertices;
 	std::vector<Face> faces;
@@ -110,9 +129,10 @@ public:
 	void DrawPoint(Vector3f point, Color color = Color(1.0f, 1.0f, 1.0f));
 	void DrawLine(Vector2i point0, Vector2i point1, float z0, float z1, Color color = Color(1.0f, 1.0f, 1.0f));
 	void DrawLine(Vector2f point0, Vector2f point1, float z0, float z1, Color color = Color(1.0f, 1.0f, 1.0f));
-	void ProcessScanLine(int y, Vector3f pa, Vector3f pb, Vector3f pc, Vector3f pd, Color color);
-	void DrawTriangle(Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color);
-	void Render(Camera camera, std::vector<Mesh> meshes);
+	void ProcessScanLine(ScanLineData slData, Vector3f pa, Vector3f pb, Vector3f pc, Vector3f pd, Color color, Image & texture);
+	//void DrawTriangle(Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color, Image &texture);
+	void DrawTriangle(Vertex _p0, Vertex _p1, Vertex _p2, Color color, Image& texture);
+	void Render(Camera camera, std::vector<Mesh> meshes, Image& texture);
 	int GetWidth() { return bmp.GetWidth(); };
 	int GetHeight() { return bmp.GetHeight(); };
 	char* GetBackBuffer();

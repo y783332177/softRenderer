@@ -20,6 +20,9 @@ Color::Color(float _r, float _g, float _b)
 Color::~Color()
 {
 }
+Image::Image()
+{
+}
 
 Image::Image(int width, int height)
 	: m_width(width), m_height(height), area(width * height), m_colors(std::vector<Color>(width* height))
@@ -33,6 +36,12 @@ Image::~Image()
 Color Image::GetColor(int x, int y) const
 {
 	return m_colors[y * m_width + x];
+}
+Color Image::GetColor(float _u, float _v) const
+{
+	int u = std::abs((int)(_u * m_width) % m_width);
+	int v = std::abs((int)(_v * m_height) % m_height);
+	return m_colors[v * m_width + u];
 }
 
 void Image::SetColor(const Color& color, int x, int y)
@@ -96,21 +105,41 @@ void Image::Read(const char* path)
 	m_colors.resize(area);
 
 	const int paddingAmount = ((4 - (m_width * 3) % 4) % 4);
-
-	for (int y = 0; y < m_height; y++)
+	if (informationHeader[14] == 32)
 	{
-		for (int x = 0; x < m_width; x++)
+		for (int y = 0; y < m_height; y++)
 		{
-			unsigned char color[3];
-			f.read(reinterpret_cast<char*>(color), 3);
+			for (int x = 0; x < m_width; x++)
+			{
+				unsigned char color[4];
+				f.read(reinterpret_cast<char*>(color), 4);
 
-			m_colors[y * m_width + x].r = static_cast<float>(color[2] / 255.0f);
-			m_colors[y * m_width + x].g = static_cast<float>(color[1] / 255.0f);
-			m_colors[y * m_width + x].b = static_cast<float>(color[0] / 255.0f);
+				m_colors[y * m_width + x].r = static_cast<float>(color[2] / 255.0f);
+				m_colors[y * m_width + x].g = static_cast<float>(color[1] / 255.0f);
+				m_colors[y * m_width + x].b = static_cast<float>(color[0] / 255.0f);
+			}
+
+			f.ignore(paddingAmount);
 		}
-
-		f.ignore(paddingAmount);
 	}
+	else
+	{
+		for (int y = 0; y < m_height; y++)
+		{
+			for (int x = 0; x < m_width; x++)
+			{
+				unsigned char color[3];
+				f.read(reinterpret_cast<char*>(color), 3);
+
+				m_colors[y * m_width + x].r = static_cast<float>(color[2] / 255.0f);
+				m_colors[y * m_width + x].g = static_cast<float>(color[1] / 255.0f);
+				m_colors[y * m_width + x].b = static_cast<float>(color[0] / 255.0f);
+			}
+
+			f.ignore(paddingAmount);
+		}
+	}
+	
 
 	f.close();
 

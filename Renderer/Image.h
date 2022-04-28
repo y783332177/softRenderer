@@ -24,10 +24,12 @@ struct Color4
 class Image
 {
 public:
+	Image();
 	Image(int width, int height);
 	~Image();
 
 	Color GetColor(int x, int y) const;
+	Color GetColor(float x, float y) const;
 	void SetColor(const Color& color, int x, int y);
 	int GetWidth() const { return m_width; };
 	int GetHeight() const { return m_height; };

@@ -431,6 +431,8 @@ void CTriangle::ProcessScanLine(Device& d, int y, Vector3f pa, Vector3f pb, Vect
         float gradient = (x - sx) / decent;
         float z = Interpolate(z1, z2, gradient);
 
+        Color textureColor;
+
         d.DrawPoint(Vector3f(x, y, z), color);
     }
 }

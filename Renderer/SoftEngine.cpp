@@ -98,6 +98,11 @@ void Mesh::SetFaces(int index, const Face& face)
 	faces[index] = face;
 }
 
+void Mesh::SetTexture(const Image _texture)
+{
+	texture = _texture;
+}
+
 void Mesh::InsertVertice(const Vector3f& vertice)
 {
 	vertices.push_back(vertice);
@@ -118,13 +123,14 @@ void Mesh::LoadObjFile(const std::string filename)
 	}
 	std::string line;
 
-	//std::vector<Vector2f> TCoords;
+	std::vector<Vector2f> TCoords;
 	//std::vector<Vector3f> Normals;
 	while (!in.eof())
 	{
 		std::getline(in, line);
 		std::istringstream iss(line.c_str());
 		char trash;
+		Vertex vert;
 		if (!line.compare(0, 2, "v "))
 		{
 			iss >> trash;
@@ -144,7 +150,7 @@ void Mesh::LoadObjFile(const std::string filename)
 			iss >> trash >> trash;
 			float x, y;
 			iss >> x >> y;
-			//TCoords.push_back(Vector2f(x, y));
+			TCoords.push_back(Vector2f(x, y));
 		}
 		else if (!line.compare(0, 2, "f "))
 		{
@@ -167,6 +173,10 @@ void Mesh::LoadObjFile(const std::string filename)
 					f.push_back(Vector3i(vIndex - 1, uvIndex - 1, nIndex - 1));
 				}
 				faces.push_back(Face(f[0][0], f[1][0], f[2][0]));
+				int index = faces.size() - 1;
+				faces[index].tCoordinates[0] = TCoords[f[0][1]];
+				faces[index].tCoordinates[1] = TCoords[f[1][1]];
+				faces[index].tCoordinates[2] = TCoords[f[2][1]];
 			}
 			else
 			{
@@ -271,8 +281,9 @@ void Device::DrawLine(Vector2f point0, Vector2f point1, float z0, float z1, Colo
 	line.LineToOptimization(*this, point0, point1);
 }
 
-void Device::ProcessScanLine(int y, Vector3f pa, Vector3f pb, Vector3f pc, Vector3f pd, Color color)
+void Device::ProcessScanLine(ScanLineData slData, Vector3f pa, Vector3f pb, Vector3f pc, Vector3f pd, Color color, Image &texture)
 {
+	int y = slData.currentY;
 	auto gradient1 = pa.y != pb.y ? (y - pa.y) / (pb.y - pa.y) : 1;
 	auto gradient2 = pc.y != pd.y ? (y - pc.y) / (pd.y - pc.y) : 1;
 
@@ -282,65 +293,107 @@ void Device::ProcessScanLine(int y, Vector3f pa, Vector3f pb, Vector3f pc, Vecto
 	float z1 = Interpolate(pa.z, pb.z, gradient1);
 	float z2 = Interpolate(pc.z, pd.z, gradient2);
 
+	float su = Interpolate(slData.ua, slData.ub, gradient1);
+	float eu = Interpolate(slData.uc, slData.ud, gradient2);
+	float sv = Interpolate(slData.va, slData.vb, gradient1);
+	float ev = Interpolate(slData.vc, slData.vd, gradient2);
+
 	float decent = (float)(ex - sx);
+
 	for (int x = sx; x < ex; x++)
 	{
 		float gradient = (x - sx) / decent;
 		float z = Interpolate(z1, z2, gradient);
 
-		DrawPoint(Vector3f(x, y, z), color);
+		float u = Interpolate(su, eu, gradient);
+		float v = Interpolate(sv, ev, gradient);
+
+		Color textureColor;
+
+		textureColor = texture.GetColor(u, v);
+
+		DrawPoint(Vector3f(x, y, z), Color(color.r * textureColor.r, color.g * textureColor.g, color.b * textureColor.b));
 	}
 }
 
-void Device::DrawTriangle(Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color)
+void Device::DrawTriangle(Vertex _p0, Vertex _p1, Vertex _p2, Color color, Image &texture)
 {
-	if (_p0.y > _p1.y)
+
+	if (_p0.coordinates.y > _p1.coordinates.y)
 	{
 		std::swap(_p0, _p1);
 	}
-	if (_p0.y > _p2.y)
+	if (_p0.coordinates.y > _p2.coordinates.y)
 	{
 		std::swap(_p0, _p2);
 	}
-	if (_p1.y > _p2.y)
+	if (_p1.coordinates.y > _p2.coordinates.y)
 	{
 		std::swap(_p1, _p2);
 	}
 
 	float dP0P1, dP0P2;
-	if (std::fabs(_p1.y - _p0.y) > 1e-6)
-		dP0P1 = (_p1.x - _p0.x) / (_p1.y - _p0.y);
+	if (std::fabs(_p1.coordinates.y - _p0.coordinates.y) > 1e-6)
+		dP0P1 = (_p1.coordinates.x - _p0.coordinates.x) / (_p1.coordinates.y - _p0.coordinates.y);
 	else
 		dP0P1 = 0;
 
-	if (std::fabs(_p2.y - _p1.y) > 1e-6)
-		dP0P2 = (_p2.x - _p0.x) / (_p2.y - _p0.y);
+	if (std::fabs(_p2.coordinates.y - _p1.coordinates.y) > 1e-6)
+		dP0P2 = (_p2.coordinates.x - _p0.coordinates.x) / (_p2.coordinates.y - _p0.coordinates.y);
 	else
 		dP0P2 = 0;
+	ScanLineData slData;
 
 	if (dP0P1 > dP0P2)
 	{
-		for (int y = _p0.y; y <= _p2.y; y++)
+		for (int y = _p0.coordinates.y; y <= _p2.coordinates.y; y++)
 		{
-			if (y < _p1.y)
-				ProcessScanLine(y, _p0, _p2, _p0, _p1, color);
+			slData.currentY = y;
+			if (y < _p1.coordinates.y)
+			{
+				slData.ua = _p0.tCoordinates.u, slData.va = _p0.tCoordinates.v;
+				slData.ub = _p2.tCoordinates.u, slData.vb = _p2.tCoordinates.v;
+				slData.uc = _p0.tCoordinates.u, slData.vc = _p0.tCoordinates.v;
+				slData.ud = _p1.tCoordinates.u, slData.vd = _p1.tCoordinates.v;
+				ProcessScanLine(slData, _p0.coordinates, _p2.coordinates, _p0.coordinates, _p1.coordinates, color, texture);
+			}
 			else
-				ProcessScanLine(y, _p0, _p2, _p1, _p2, color);
+			{
+				slData.ua = _p0.tCoordinates.u, slData.va = _p0.tCoordinates.v;
+				slData.ub = _p2.tCoordinates.u, slData.vb = _p2.tCoordinates.v;
+				slData.uc = _p1.tCoordinates.u, slData.vc = _p1.tCoordinates.v;
+				slData.ud = _p2.tCoordinates.u, slData.vd = _p2.tCoordinates.v;
+				ProcessScanLine(slData, _p0.coordinates, _p2.coordinates, _p1.coordinates, _p2.coordinates, color, texture);
+			}
 		}
 	}
 	else
 	{
-		for (int y = _p0.y; y <= _p2.y; y++)
+		for (int y = _p0.coordinates.y; y <= _p2.coordinates.y; y++)
 		{
-			if (y < _p1.y)
-				ProcessScanLine(y, _p0, _p1, _p0, _p2, color);
+			slData.currentY = y;
+			if (y < _p1.coordinates.y)
+			{
+				slData.ua = _p0.tCoordinates.u, slData.va = _p0.tCoordinates.v;
+				slData.ub = _p1.tCoordinates.u, slData.vb = _p1.tCoordinates.v;
+				slData.uc = _p0.tCoordinates.u, slData.vc = _p0.tCoordinates.v;
+				slData.ud = _p2.tCoordinates.u, slData.vd = _p2.tCoordinates.v;
+				ProcessScanLine(slData, _p0.coordinates, _p1.coordinates, _p0.coordinates, _p2.coordinates, color, texture);
+			}
 			else
-				ProcessScanLine(y, _p1, _p2, _p0, _p2, color);
+			{
+				slData.ua = _p1.tCoordinates.u, slData.va = _p1.tCoordinates.v;
+				slData.ub = _p2.tCoordinates.u, slData.vb = _p2.tCoordinates.v;
+				slData.uc = _p0.tCoordinates.u, slData.vc = _p0.tCoordinates.v;
+				slData.ud = _p2.tCoordinates.u, slData.vd = _p2.tCoordinates.v;
+				ProcessScanLine(slData, _p1.coordinates, _p2.coordinates, _p0.coordinates, _p2.coordinates, color, texture);
+			}
+				
 		}
 	}
 }
 
-void Device::Render(Camera camera, std::vector<Mesh> meshes)
+void Device::Render(Camera camera, std::vector<Mesh> meshes, Image& texture)
 {
 	// MVP matrix first
 	auto viewMatrix = LookAtRH(camera.GetPosition(), camera.GetTarget(), Vector3f(0.0f, 1.0f, 0.0f));
@@ -372,16 +425,28 @@ void Device::Render(Camera camera, std::vector<Mesh> meshes)
 				std::cout << "error C" << std::endl;
 				break;
 			}
-			auto& vertexA = vertices[face.A];
-			auto& vertexB = vertices[face.B];
-			auto& vertexC = vertices[face.C];
-			auto pixelA = Project(vertexA, transformMatrix);
-			auto pixelB = Project(vertexB, transformMatrix);
-			auto pixelC = Project(vertexC, transformMatrix);
-			float color = 0.4f + (pixelA.z + pixelB.z + pixelC.z + 15.f) / 6.f;
+			Vertex vertexA, vertexB, vertexC;
+			vertexA.coordinates = vertices[face.A], vertexA.tCoordinates = face.tCoordinates[0];
+			vertexB.coordinates = vertices[face.B], vertexB.tCoordinates = face.tCoordinates[1];
+			vertexC.coordinates = vertices[face.C], vertexC.tCoordinates = face.tCoordinates[2];
+			//auto& vertexA = vertices[face.A];
+			//auto& vertexB = vertices[face.B];
+			//auto& vertexC = vertices[face.C];
+			
+
+			//auto pixelA = Project(vertexA, transformMatrix);
+			//auto pixelB = Project(vertexB, transformMatrix);
+			//auto pixelC = Project(vertexC, transformMatrix);
+			vertexA.coordinates = Project(vertexA.coordinates, transformMatrix);
+			vertexB.coordinates = Project(vertexB.coordinates, transformMatrix);
+			vertexC.coordinates = Project(vertexC.coordinates, transformMatrix);
+			//float color = 0.4f + (pixelA.z + pixelB.z + pixelC.z + 15.f) / 6.f;
+			float color = 0.4f + (vertexA.coordinates.z + vertexB.coordinates.z + vertexC.coordinates.z + 15.f) / 6.f;
 			faceIndex++;
 			//CTriangle::DrawTriangleBox(*this, pixelA, pixelB, pixelC, Color(color, color, color));
-			DrawTriangle(pixelA, pixelB, pixelC, Color(1.f, 0, 0));
+			//DrawTriangle(pixelA, pixelB, pixelC, Color(1.f, 0, 0));
+			//DrawTriangle(pixelA, pixelB, pixelC, Color(color, color, color), texture);
+			DrawTriangle(vertexA, vertexB, vertexC, Color(1.f, 1.f, 1.f), texture);
 		}
 	}
 }
