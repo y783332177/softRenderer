@@ -119,7 +119,7 @@ void Image::Read(const char* path)
 				m_colors[y * m_width + x].b = static_cast<float>(color[0] / 255.0f);
 			}
 
-			f.ignore(paddingAmount);
+			//f.ignore(paddingAmount);
 		}
 	}
 	else

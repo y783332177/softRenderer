@@ -17,7 +17,7 @@ int main()
 	Image image(width, height);
 	Image texture;
 	//texture.Read("default.bmp");
-	texture.Read("head_texture.bmp");
+	texture.Read("african_head_diffuse.bmp");
 	texture.Export("image.bmp");
 	Device d(image);
 	//Mesh mesh("Cube", "cube.obj");
@@ -26,7 +26,7 @@ int main()
 	//mesh.SetTexture(texture);
 	mesh.SetPosition(Vector3f(0., 0., 0.));
 	mesh.SetRotation(Vector3f(0., 0., 0.));
-	Camera camera(Vector3f(0.0f, 0.0f, 5.f), Vector3f(0.0f, 0.0f, 0.0f));
+	Camera camera(Vector3f(.0f, 0.0f, 5.f), Vector3f(0.0f, 0.0f, 0.0f));
 	Window* pWindow = new Window(width, height);
 	for (int i = 0; i < 1; i++)
 	{
