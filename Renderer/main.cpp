@@ -28,12 +28,13 @@ int main()
 	mesh.SetRotation(Vector3f(0., 0., 0.));
 	Camera camera(Vector3f(.0f, 0.0f, 5.f), Vector3f(0.0f, 0.0f, 0.0f));
 	Window* pWindow = new Window(width, height);
+	std::vector<Mesh*> meshes = { &mesh };
 	for (int i = 0; i < 1; i++)
 	{
 		d.Clear(0, 0, 0, 255);
 		auto r = mesh.GetRotation();
 		mesh.SetRotation(Vector3f(r.x + 0.f, r.y - 0.f, r.z - 0.0f));
-		d.Render(camera, { mesh }, texture);
+		d.Render(camera, meshes, texture);
 		//CTriangle::DrawTriangle(d, Vector3f(0, 0, 5), Vector3f(300, 499, 6), Vector3f(600, 312, 7), Color(1.0f, 0.0f, 0.0f));
 		//CTriangle::DrawTriangle(d, Vector3f(0, 0, 4.5), Vector3f(300, 20, 5.5), Vector3f(500, 412, 6.5), Color(0.0f, 1.0f, 0.0f));
 		d.Present();
@@ -50,7 +51,7 @@ int main()
 		d.Clear(0, 0, 0, 255);
 		auto r = mesh.GetRotation();
 		mesh.SetRotation(Vector3f(r.x + 0.01f, r.y + 0.01f, r.z));
-		d.Render(camera, { mesh }, texture);
+		d.Render(camera, meshes, texture);
 
 		if (!pWindow->ProcessMessages())
 		{
@@ -66,7 +67,7 @@ int main()
 		frame++;
 		if ((double)t / CLOCKS_PER_SEC > 1.f)
 		{
-			std::cout << frame << std::endl;
+			std::cout << (double)frame / ((double)t / CLOCKS_PER_SEC) << std::endl;
 			frame = 0;
 			t = 0.f;
 		}

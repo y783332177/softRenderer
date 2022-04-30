@@ -132,7 +132,7 @@ public:
 	void ProcessScanLine(ScanLineData slData, Vector3f pa, Vector3f pb, Vector3f pc, Vector3f pd, Color color, Image & texture);
 	//void DrawTriangle(Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color, Image &texture);
 	void DrawTriangle(Vertex _p0, Vertex _p1, Vertex _p2, Color color, Image& texture);
-	void Render(Camera camera, std::vector<Mesh> meshes, Image& texture);
+	void Render(Camera camera, std::vector<Mesh*>& meshes, Image& texture);
 	int GetWidth() { return bmp.GetWidth(); };
 	int GetHeight() { return bmp.GetHeight(); };
 	char* GetBackBuffer();

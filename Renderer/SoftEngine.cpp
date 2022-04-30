@@ -393,22 +393,22 @@ void Device::DrawTriangle(Vertex _p0, Vertex _p1, Vertex _p2, Color color, Image
 	}
 }
 
-void Device::Render(Camera camera, std::vector<Mesh> meshes, Image& texture)
+void Device::Render(Camera camera, std::vector<Mesh*>& meshes, Image& texture)
 {
 	// MVP matrix first
 	auto viewMatrix = LookAtRH(camera.GetPosition(), camera.GetTarget(), Vector3f(0.0f, 1.0f, 0.0f));
 	auto projectionMatrix = PerspectiveFovRH(0.5f, (float)bmp.GetWidth() / bmp.GetHeight(), 0.1f, 8.0f);
 
-	for (Mesh mesh : meshes)
+	for (Mesh* mesh : meshes)
 	{
-		auto meshRotation = mesh.GetRotation();
-		auto worldMatrix =  RotationPitch(meshRotation[0]) * RotationYaw(meshRotation[1]) * RotationRoll(meshRotation[2]) * Translation(mesh.GetPosition());
+		auto meshRotation = mesh->GetRotation();
+		auto worldMatrix =  RotationPitch(meshRotation[0]) * RotationYaw(meshRotation[1]) * RotationRoll(meshRotation[2]) * Translation(mesh->GetPosition());
 		auto transformMatrix = projectionMatrix * viewMatrix * worldMatrix;
 		
-		std::vector<Vector3f> vertices = mesh.GetVertices();
-		int facesLength = mesh.GetFaces().size();
+		std::vector<Vector3f> vertices = mesh->GetVertices();
+		int facesLength = mesh->GetFaces().size();
 		int faceIndex = 0;
-		for (auto& face : mesh.GetFaces())
+		for (auto& face : mesh->GetFaces())
 		{
 			if (face.A < 0)
 			{
