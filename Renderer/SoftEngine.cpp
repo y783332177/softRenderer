@@ -103,6 +103,11 @@ void Mesh::SetTexture(const Image _texture)
 	texture = _texture;
 }
 
+void Mesh::SetNormal(const Image _normal)
+{
+	normal = _normal;
+}
+
 void Mesh::InsertVertice(const Vector3f& vertice)
 {
 	vertices.push_back(vertice);
@@ -281,22 +286,31 @@ void Device::DrawLine(Vector2f point0, Vector2f point1, float z0, float z1, Colo
 	line.LineToOptimization(*this, point0, point1);
 }
 
-void Device::ProcessScanLine(ScanLineData slData, Vector3f pa, Vector3f pb, Vector3f pc, Vector3f pd, Color color, Image &texture)
+void Device::ProcessScanLine(int y, Vertex v0, Vertex v1, Vertex v2, Vertex v3, Color color, Image &texture)
 {
-	int y = slData.currentY;
-	auto gradient1 = pa.y != pb.y ? (y - pa.y) / (pb.y - pa.y) : 1;
-	auto gradient2 = pc.y != pd.y ? (y - pc.y) / (pd.y - pc.y) : 1;
+	Vector3f p0 = v0.coordinates;
+	Vector3f p1 = v1.coordinates;
+	Vector3f p2 = v2.coordinates;
+	Vector3f p3 = v3.coordinates;
 
-	int sx = (int)Interpolate(pa.x, pb.x, gradient1);
-	int ex = (int)Interpolate(pc.x, pd.x, gradient2);
+	Vector2f tCoord0 = v0.tCoordinates;
+	Vector2f tCoord1 = v1.tCoordinates;
+	Vector2f tCoord2 = v2.tCoordinates;
+	Vector2f tCoord3 = v3.tCoordinates;
 
-	float z1 = Interpolate(pa.z, pb.z, gradient1);
-	float z2 = Interpolate(pc.z, pd.z, gradient2);
+	auto gradient1 = p0.y != p1.y ? (y - p0.y) / (p1.y - p0.y) : 1;
+	auto gradient2 = p2.y != p3.y ? (y - p2.y) / (p3.y - p2.y) : 1;
 
-	float su = Interpolate(slData.ua, slData.ub, gradient1);
-	float eu = Interpolate(slData.uc, slData.ud, gradient2);
-	float sv = Interpolate(slData.va, slData.vb, gradient1);
-	float ev = Interpolate(slData.vc, slData.vd, gradient2);
+	int sx = (int)Interpolate(p0.x, p1.x, gradient1);
+	int ex = (int)Interpolate(p2.x, p3.x, gradient2);
+
+	float z1 = Interpolate(p0.z, p1.z, gradient1);
+	float z2 = Interpolate(p2.z, p3.z, gradient2);
+
+	float su = Interpolate(tCoord0.u, tCoord1.u, gradient1);
+	float eu = Interpolate(tCoord2.u, tCoord3.u, gradient2);
+	float sv = Interpolate(tCoord0.v, tCoord1.v, gradient1);
+	float ev = Interpolate(tCoord2.v, tCoord3.v, gradient2);
 
 	float decent = (float)(ex - sx);
 
@@ -316,84 +330,68 @@ void Device::ProcessScanLine(ScanLineData slData, Vector3f pa, Vector3f pb, Vect
 	}
 }
 
-void Device::DrawTriangle(Vertex _p0, Vertex _p1, Vertex _p2, Color color, Image &texture)
+void Device::DrawTriangle(Vertex v0, Vertex v1, Vertex v2, Color color, Image &texture)
 {
 
-	if (_p0.coordinates.y > _p1.coordinates.y)
+	if (v0.coordinates.y > v1.coordinates.y)
 	{
-		std::swap(_p0, _p1);
+		std::swap(v0, v1);
 	}
-	if (_p0.coordinates.y > _p2.coordinates.y)
+	if (v0.coordinates.y > v2.coordinates.y)
 	{
-		std::swap(_p0, _p2);
+		std::swap(v0, v2);
 	}
-	if (_p1.coordinates.y > _p2.coordinates.y)
+	if (v1.coordinates.y > v2.coordinates.y)
 	{
-		std::swap(_p1, _p2);
+		std::swap(v1, v2);
 	}
 
 	float dP0P1, dP0P2;
-	if (std::fabs(_p1.coordinates.y - _p0.coordinates.y) > 1e-6)
-		dP0P1 = (_p1.coordinates.x - _p0.coordinates.x) / (_p1.coordinates.y - _p0.coordinates.y);
+	if (std::fabs(v1.coordinates.y - v0.coordinates.y) > 1e-6)
+		dP0P1 = (v1.coordinates.x - v0.coordinates.x) / (v1.coordinates.y - v0.coordinates.y);
 	else
 		dP0P1 = 0;
 
-	if (std::fabs(_p2.coordinates.y - _p1.coordinates.y) > 1e-6)
-		dP0P2 = (_p2.coordinates.x - _p0.coordinates.x) / (_p2.coordinates.y - _p0.coordinates.y);
+	if (std::fabs(v2.coordinates.y - v1.coordinates.y) > 1e-6)
+		dP0P2 = (v2.coordinates.x - v0.coordinates.x) / (v2.coordinates.y - v0.coordinates.y);
 	else
 		dP0P2 = 0;
 	ScanLineData slData;
 
 	if (dP0P1 > dP0P2)
 	{
-		for (int y = _p0.coordinates.y; y <= _p2.coordinates.y; y++)
+		for (int y = v0.coordinates.y; y <= v2.coordinates.y; y++)
 		{
 			slData.currentY = y;
-			if (y < _p1.coordinates.y)
+			if (y < v1.coordinates.y)
 			{
-				slData.ua = _p0.tCoordinates.u, slData.va = _p0.tCoordinates.v;
-				slData.ub = _p2.tCoordinates.u, slData.vb = _p2.tCoordinates.v;
-				slData.uc = _p0.tCoordinates.u, slData.vc = _p0.tCoordinates.v;
-				slData.ud = _p1.tCoordinates.u, slData.vd = _p1.tCoordinates.v;
-				ProcessScanLine(slData, _p0.coordinates, _p2.coordinates, _p0.coordinates, _p1.coordinates, color, texture);
+				ProcessScanLine(y, v0, v2, v0, v1, color, texture);
 			}
 			else
 			{
-				slData.ua = _p0.tCoordinates.u, slData.va = _p0.tCoordinates.v;
-				slData.ub = _p2.tCoordinates.u, slData.vb = _p2.tCoordinates.v;
-				slData.uc = _p1.tCoordinates.u, slData.vc = _p1.tCoordinates.v;
-				slData.ud = _p2.tCoordinates.u, slData.vd = _p2.tCoordinates.v;
-				ProcessScanLine(slData, _p0.coordinates, _p2.coordinates, _p1.coordinates, _p2.coordinates, color, texture);
+				ProcessScanLine(y, v0, v2, v1, v2, color, texture);
 			}
 		}
 	}
 	else
 	{
-		for (int y = _p0.coordinates.y; y <= _p2.coordinates.y; y++)
+		for (int y = v0.coordinates.y; y <= v2.coordinates.y; y++)
 		{
 			slData.currentY = y;
-			if (y < _p1.coordinates.y)
+			if (y < v1.coordinates.y)
 			{
-				slData.ua = _p0.tCoordinates.u, slData.va = _p0.tCoordinates.v;
-				slData.ub = _p1.tCoordinates.u, slData.vb = _p1.tCoordinates.v;
-				slData.uc = _p0.tCoordinates.u, slData.vc = _p0.tCoordinates.v;
-				slData.ud = _p2.tCoordinates.u, slData.vd = _p2.tCoordinates.v;
-				ProcessScanLine(slData, _p0.coordinates, _p1.coordinates, _p0.coordinates, _p2.coordinates, color, texture);
+				ProcessScanLine(y, v0, v1, v0, v2, color, texture);
 			}
 			else
 			{
-				slData.ua = _p1.tCoordinates.u, slData.va = _p1.tCoordinates.v;
-				slData.ub = _p2.tCoordinates.u, slData.vb = _p2.tCoordinates.v;
-				slData.uc = _p0.tCoordinates.u, slData.vc = _p0.tCoordinates.v;
-				slData.ud = _p2.tCoordinates.u, slData.vd = _p2.tCoordinates.v;
-				ProcessScanLine(slData, _p1.coordinates, _p2.coordinates, _p0.coordinates, _p2.coordinates, color, texture);
+				ProcessScanLine(y, v1, v2, v0, v2, color, texture);
 			}
 				
 		}
 	}
 }
 
-void Device::Render(Camera camera, std::vector<Mesh*>& meshes, Image& texture)
+void Device::Render(Camera camera, std::vector<Mesh*>& meshes)
 {
 	// MVP matrix first
 	auto viewMatrix = LookAtRH(camera.GetPosition(), camera.GetTarget(), Vector3f(0.0f, 1.0f, 0.0f));
@@ -401,6 +399,7 @@ void Device::Render(Camera camera, std::vector<Mesh*>& meshes, Image& texture)
 
 	for (Mesh* mesh : meshes)
 	{
+		Image& texture = mesh->GetTexture();
 		auto meshRotation = mesh->GetRotation();
 		auto worldMatrix =  RotationPitch(meshRotation[0]) * RotationYaw(meshRotation[1]) * RotationRoll(meshRotation[2]) * Translation(mesh->GetPosition());
 		auto transformMatrix = projectionMatrix * viewMatrix * worldMatrix;

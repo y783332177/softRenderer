@@ -293,9 +293,13 @@ typedef Matrix<3, 4, float> Mat3x4f;
 
 inline Mat4x4f LookAtRH(Vector3f cameraPos, Vector3f cameraTar, Vector3f upVec)
 {
+	//Vector3f cameraDir = vector_normalize(cameraTar - cameraPos);
+	//Vector3f cameraRight = vector_normalize(vector_cross(cameraDir, upVec));
+	//Vector3f cameraUp = vector_cross(cameraRight, cameraDir);
+
 	Vector3f cameraDir = vector_normalize(cameraTar - cameraPos);
-	Vector3f cameraRight = vector_normalize(vector_cross(cameraDir, upVec));
-	Vector3f cameraUp = vector_cross(cameraRight, cameraDir);
+	Vector3f cameraRight = vector_normalize(vector_cross(upVec, cameraDir));
+	Vector3f cameraUp = vector_cross(cameraDir, cameraRight);
 
 	Mat4x4f lookAt;
 	lookAt.SetRow(0, Vector4f(cameraRight.x, cameraRight.y, cameraRight.z, -vector_dot(cameraPos, cameraRight)));

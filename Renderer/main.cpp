@@ -23,7 +23,7 @@ int main()
 	//Mesh mesh("Cube", "cube.obj");
 	//Mesh mesh("bunny", "bunny.obj");
 	Mesh mesh("head", "head.obj");
-	//mesh.SetTexture(texture);
+	mesh.SetTexture(texture);
 	mesh.SetPosition(Vector3f(0., 0., 0.));
 	mesh.SetRotation(Vector3f(0., 0., 0.));
 	Camera camera(Vector3f(.0f, 0.0f, 5.f), Vector3f(0.0f, 0.0f, 0.0f));
@@ -34,7 +34,7 @@ int main()
 		d.Clear(0, 0, 0, 255);
 		auto r = mesh.GetRotation();
 		mesh.SetRotation(Vector3f(r.x + 0.f, r.y - 0.f, r.z - 0.0f));
-		d.Render(camera, meshes, texture);
+		d.Render(camera, meshes);
 		//CTriangle::DrawTriangle(d, Vector3f(0, 0, 5), Vector3f(300, 499, 6), Vector3f(600, 312, 7), Color(1.0f, 0.0f, 0.0f));
 		//CTriangle::DrawTriangle(d, Vector3f(0, 0, 4.5), Vector3f(300, 20, 5.5), Vector3f(500, 412, 6.5), Color(0.0f, 1.0f, 0.0f));
 		d.Present();
@@ -51,7 +51,7 @@ int main()
 		d.Clear(0, 0, 0, 255);
 		auto r = mesh.GetRotation();
 		mesh.SetRotation(Vector3f(r.x + 0.01f, r.y + 0.01f, r.z));
-		d.Render(camera, meshes, texture);
+		d.Render(camera, meshes);
 
 		if (!pWindow->ProcessMessages())
 		{
