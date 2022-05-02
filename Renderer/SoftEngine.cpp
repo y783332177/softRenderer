@@ -129,7 +129,7 @@ void Mesh::LoadObjFile(const std::string filename)
 	std::string line;
 
 	std::vector<Vector2f> TCoords;
-	//std::vector<Vector3f> Normals;
+	std::vector<Vector3f> Normals;
 	while (!in.eof())
 	{
 		std::getline(in, line);
@@ -148,7 +148,7 @@ void Mesh::LoadObjFile(const std::string filename)
 			iss >> trash >> trash;
 			float x, y, z;
 			iss >> x >> y >> z;
-			//Normals.push_back(Vector3f(x, y, z));
+			Normals.push_back(Vector3f(x, y, z));
 		}
 		else if (!line.compare(0, 3, "vt "))
 		{
@@ -182,6 +182,9 @@ void Mesh::LoadObjFile(const std::string filename)
 				faces[index].tCoordinates[0] = TCoords[f[0][1]];
 				faces[index].tCoordinates[1] = TCoords[f[1][1]];
 				faces[index].tCoordinates[2] = TCoords[f[2][1]];
+				faces[index].normal[0] = Normals[f[0][2]];
+				faces[index].normal[1] = Normals[f[1][2]];
+				faces[index].normal[2] = Normals[f[2][2]];
 			}
 			else
 			{
@@ -286,7 +289,7 @@ void Device::DrawLine(Vector2f point0, Vector2f point1, float z0, float z1, Colo
 	line.LineToOptimization(*this, point0, point1);
 }
 
-void Device::ProcessScanLine(int y, Vertex v0, Vertex v1, Vertex v2, Vertex v3, Color color, Image &texture)
+void Device::ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, Vertex& v3, Color& color, Image &texture)
 {
 	Vector3f p0 = v0.coordinates;
 	Vector3f p1 = v1.coordinates;
@@ -321,7 +324,8 @@ void Device::ProcessScanLine(int y, Vertex v0, Vertex v1, Vertex v2, Vertex v3, 
 
 		float u = Interpolate(su, eu, gradient);
 		float v = Interpolate(sv, ev, gradient);
-
+//		Vector3f viewPos = 
+	//	FlatShader shader()
 		Color textureColor;
 
 		textureColor = texture.GetColor(u, v);
@@ -425,9 +429,9 @@ void Device::Render(Camera camera, std::vector<Mesh*>& meshes)
 				break;
 			}
 			Vertex vertexA, vertexB, vertexC;
-			vertexA.coordinates = vertices[face.A], vertexA.tCoordinates = face.tCoordinates[0];
-			vertexB.coordinates = vertices[face.B], vertexB.tCoordinates = face.tCoordinates[1];
-			vertexC.coordinates = vertices[face.C], vertexC.tCoordinates = face.tCoordinates[2];
+			vertexA.coordinates = vertices[face.A], vertexA.tCoordinates = face.tCoordinates[0], vertexA.normal = face.normal[0];
+			vertexB.coordinates = vertices[face.B], vertexB.tCoordinates = face.tCoordinates[1], vertexB.normal = face.normal[1];
+			vertexC.coordinates = vertices[face.C], vertexC.tCoordinates = face.tCoordinates[2], vertexC.normal = face.normal[2];
 			//auto& vertexA = vertices[face.A];
 			//auto& vertexB = vertices[face.B];
 			//auto& vertexC = vertices[face.C];
@@ -453,4 +457,32 @@ void Device::Render(Camera camera, std::vector<Mesh*>& meshes)
 Device::~Device()
 {
 	delete [] backBuffer;
+}
+
+Light::Light() { }
+Light::Light(const Vector3f& _light, const Vector3f& _intensity) :light(_light), intensity(_intensity) { }
+Light::~Light(){ }
+Vector3f Light::GetLightV(const Vector3f& pos)
+{
+	return pos - light;
+}
+
+Vector3f Light::GetLight()
+{
+	return light;
+}
+
+void Light::SetIntensity(const Vector3f& _intensity)
+{
+	intensity = _intensity;
+}
+
+Vector3f Light::GetIntensity()
+{
+	return intensity;
+}
+
+void Light::SetLight(const Vector3f& _light)
+{
+	light = _light;
 }

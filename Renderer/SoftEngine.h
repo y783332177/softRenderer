@@ -1,10 +1,15 @@
 #pragma once
+
+#ifndef _SOFTENGINE_H
+#define _SOFTENGINE_H
+
 #include <string>
 #include <vector>
 #include <iostream>
 #include "VectorNT.h"
 #include "Matrix.h"
 #include "Image.h"
+#include "Shader.h"
 class Camera
 {
 public:
@@ -35,6 +40,7 @@ struct Face
 	int B;
 	int C;
 	Vector2f tCoordinates[3];
+	Vector3f normal[3];
 	
 	Face() : A(0), B(1), C(2) {};
 	Face(int _A, int _B, int _C) : A(_A), B(_B), C(_C) {};
@@ -132,7 +138,7 @@ public:
 	void DrawPoint(Vector3f point, Color color = Color(1.0f, 1.0f, 1.0f));
 	void DrawLine(Vector2i point0, Vector2i point1, float z0, float z1, Color color = Color(1.0f, 1.0f, 1.0f));
 	void DrawLine(Vector2f point0, Vector2f point1, float z0, float z1, Color color = Color(1.0f, 1.0f, 1.0f));
-	void ProcessScanLine(int y, Vertex v0, Vertex v1, Vertex v2, Vertex v3, Color color, Image & texture);
+	void ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, Vertex& v3, Color& color, Image & texture);
 	//void DrawTriangle(Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color, Image &texture);
 	void DrawTriangle(Vertex v0, Vertex v1, Vertex v2, Color color, Image& texture);
 	void Render(Camera camera, std::vector<Mesh*>& meshes);
@@ -148,3 +154,21 @@ private:
 	int zBufferSize;
 	Image bmp;
 };
+
+class Light
+{
+public:
+	Light();
+	Light(const Vector3f& _light, const Vector3f& intensity);
+	~Light();
+	Vector3f GetLightV(const Vector3f& pos);
+	Vector3f GetLight();
+	Vector3f GetIntensity();
+	void SetLight(const Vector3f& _light);
+	void SetIntensity(const Vector3f& _intensity);
+private:
+	Vector3f light;
+	Vector3f intensity;
+};
+
+#endif
