@@ -10,6 +10,7 @@
 #include "Matrix.h"
 #include "Image.h"
 #include "Shader.h"
+
 class Camera
 {
 public:

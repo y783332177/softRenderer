@@ -7,6 +7,8 @@
 #include "Matrix.h"
 #include "Image.h"
 
+extern class Light;
+
 class Shader
 {
 public:
