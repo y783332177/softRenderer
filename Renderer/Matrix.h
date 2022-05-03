@@ -360,7 +360,7 @@ inline Mat4x4f RotationRoll(const float roll)
 	return roRoll;
 }
 
-inline Vector3f barycentric(Vector3f A, Vector3f B, Vector3f C, Vector3f P)
+inline Vector3f barycentric(const Vector3f& A, const Vector3f& B, const Vector3f& C, const Vector3f& P)
 {
 	Vector3f s[2];
 	for (int i = 1; i >= 0; i--)

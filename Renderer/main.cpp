@@ -22,7 +22,8 @@ int main()
 	Device d(image);
 	//Mesh mesh("Cube", "cube.obj");
 	//Mesh mesh("bunny", "bunny.obj");
-	Mesh mesh("head", "head.obj");
+	Shader* shader = new Shader();
+	Mesh mesh("head", "head.obj", shader);
 	mesh.SetTexture(texture);
 	mesh.SetPosition(Vector3f(0., 0., 0.));
 	mesh.SetRotation(Vector3f(0., 0., 0.));

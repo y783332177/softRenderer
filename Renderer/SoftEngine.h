@@ -11,6 +11,12 @@
 #include "Image.h"
 #include "Shader.h"
 
+extern class Shader;
+
+extern Mat4x4f worldMatrix;
+extern Mat4x4f viewMatrix;
+extern Mat4x4f projectionMatrix;
+
 class Camera
 {
 public:
@@ -31,7 +37,7 @@ struct Vertex
 {
 	Vector3f normal;
 	Vector3f coordinates;
-	Vector3f wordCoordinates;
+	Vector3f worldCoordinates;
 	Vector3f viewCoordinates;
 	Vector2f tCoordinates;
 };
@@ -94,7 +100,7 @@ public:
 	Mesh();
 	Mesh(const std::string& _name, int verticesCount);
 	Mesh(const std::string& _name, int verticesCount, int facesCount);
-	Mesh(const std::string& _name, const std::string& objFile);
+	Mesh(const std::string& _name, const std::string& objFile, Shader *_shader);
 	std::string GetName() const { return name; };
 	Vector3f GetPosition() const { return position; };
 	Vector3f GetRotation() const { return rotation; };
@@ -118,7 +124,7 @@ public:
 
 	void LoadObjFile(const std::string filename);
 	~Mesh();
-
+	std::shared_ptr<Shader>shader;
 private:
 	Image texture;
 	Image normal;
@@ -137,12 +143,13 @@ public:
 	void Present();
 	void PutPixel(int x, int y, float z,Color color);
 	Vector3f Project(Vector3f coord, Mat4x4f transMat);
+	Vector3f GetScreenCrood(const Vector4f& point);
 	void DrawPoint(Vector3f point, Color color = Color(1.0f, 1.0f, 1.0f));
 	void DrawLine(Vector2i point0, Vector2i point1, float z0, float z1, Color color = Color(1.0f, 1.0f, 1.0f));
 	void DrawLine(Vector2f point0, Vector2f point1, float z0, float z1, Color color = Color(1.0f, 1.0f, 1.0f));
-	void ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, Vertex& v3, Vertex tri[], Color& color, Image & texture);
+	void ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, Vertex& v3, Vertex tri[], Color& color, std::shared_ptr<Shader>& shader);
 	//void DrawTriangle(Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color, Image &texture);
-	void DrawTriangle(Vertex v0, Vertex v1, Vertex v2, Color color, Image& texture);
+	void DrawTriangle(Vertex v0, Vertex v1, Vertex v2, Color color, std::shared_ptr<Shader> &shader);
 	void Render(Camera camera, std::vector<Mesh*>& meshes);
 	int GetWidth() { return bmp.GetWidth(); };
 	int GetHeight() { return bmp.GetHeight(); };

@@ -1,6 +1,6 @@
 #include "common.h"
 
-void Stringsplit(std::string str, const const char split, std::vector<std::string>& rst)
+void Stringsplit(std::string &str, const char& split, std::vector<std::string>& rst)
 {
 	std::istringstream iss(str);
 	std::string token;
@@ -10,7 +10,7 @@ void Stringsplit(std::string str, const const char split, std::vector<std::strin
 	}
 }
 
-void StoiVUvN(std::vector<std::string>rst, int& vIndex, int& uvIndex, int& nIndex)
+void StoiVUvN(std::vector<std::string>& rst, int& vIndex, int& uvIndex, int& nIndex)
 {
 	vIndex = stoi(rst[0]);
 	uvIndex = stoi(rst[1]);
