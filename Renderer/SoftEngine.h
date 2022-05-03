@@ -32,6 +32,7 @@ struct Vertex
 	Vector3f normal;
 	Vector3f coordinates;
 	Vector3f wordCoordinates;
+	Vector3f viewCoordinates;
 	Vector2f tCoordinates;
 };
 
@@ -139,7 +140,7 @@ public:
 	void DrawPoint(Vector3f point, Color color = Color(1.0f, 1.0f, 1.0f));
 	void DrawLine(Vector2i point0, Vector2i point1, float z0, float z1, Color color = Color(1.0f, 1.0f, 1.0f));
 	void DrawLine(Vector2f point0, Vector2f point1, float z0, float z1, Color color = Color(1.0f, 1.0f, 1.0f));
-	void ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, Vertex& v3, Color& color, Image & texture);
+	void ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, Vertex& v3, Vertex tri[], Color& color, Image & texture);
 	//void DrawTriangle(Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color, Image &texture);
 	void DrawTriangle(Vertex v0, Vertex v1, Vertex v2, Color color, Image& texture);
 	void Render(Camera camera, std::vector<Mesh*>& meshes);

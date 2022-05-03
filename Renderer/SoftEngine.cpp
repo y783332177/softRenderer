@@ -289,7 +289,7 @@ void Device::DrawLine(Vector2f point0, Vector2f point1, float z0, float z1, Colo
 	line.LineToOptimization(*this, point0, point1);
 }
 
-void Device::ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, Vertex& v3, Color& color, Image &texture)
+void Device::ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, Vertex& v3, Vertex tri[], Color& color, Image &texture)
 {
 	Vector3f p0 = v0.coordinates;
 	Vector3f p1 = v1.coordinates;
@@ -324,8 +324,8 @@ void Device::ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, V
 
 		float u = Interpolate(su, eu, gradient);
 		float v = Interpolate(sv, ev, gradient);
-//		Vector3f viewPos = 
-	//	FlatShader shader()
+		//Vector3f viewPos = 
+		//FlatShader shader()
 		Color textureColor;
 
 		textureColor = texture.GetColor(u, v);
@@ -336,7 +336,7 @@ void Device::ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, V
 
 void Device::DrawTriangle(Vertex v0, Vertex v1, Vertex v2, Color color, Image &texture)
 {
-
+	Vertex triangle[3] = { v0, v1, v2 };
 	if (v0.coordinates.y > v1.coordinates.y)
 	{
 		std::swap(v0, v1);
@@ -369,11 +369,11 @@ void Device::DrawTriangle(Vertex v0, Vertex v1, Vertex v2, Color color, Image &t
 			slData.currentY = y;
 			if (y < v1.coordinates.y)
 			{
-				ProcessScanLine(y, v0, v2, v0, v1, color, texture);
+				ProcessScanLine(y, v0, v2, v0, v1, triangle, color, texture);
 			}
 			else
 			{
-				ProcessScanLine(y, v0, v2, v1, v2, color, texture);
+				ProcessScanLine(y, v0, v2, v1, v2, triangle, color, texture);
 			}
 		}
 	}
@@ -384,11 +384,11 @@ void Device::DrawTriangle(Vertex v0, Vertex v1, Vertex v2, Color color, Image &t
 			slData.currentY = y;
 			if (y < v1.coordinates.y)
 			{
-				ProcessScanLine(y, v0, v1, v0, v2, color, texture);
+				ProcessScanLine(y, v0, v1, v0, v2, triangle, color, texture);
 			}
 			else
 			{
-				ProcessScanLine(y, v1, v2, v0, v2, color, texture);
+				ProcessScanLine(y, v1, v2, v0, v2, triangle, color, texture);
 			}
 				
 		}
@@ -407,6 +407,7 @@ void Device::Render(Camera camera, std::vector<Mesh*>& meshes)
 		auto meshRotation = mesh->GetRotation();
 		auto worldMatrix =  RotationPitch(meshRotation[0]) * RotationYaw(meshRotation[1]) * RotationRoll(meshRotation[2]) * Translation(mesh->GetPosition());
 		auto transformMatrix = projectionMatrix * viewMatrix * worldMatrix;
+		auto mvMatrix = viewMatrix * worldMatrix;
 		
 		std::vector<Vector3f> vertices = mesh->GetVertices();
 		int facesLength = mesh->GetFaces().size();
@@ -440,9 +441,15 @@ void Device::Render(Camera camera, std::vector<Mesh*>& meshes)
 			//auto pixelA = Project(vertexA, transformMatrix);
 			//auto pixelB = Project(vertexB, transformMatrix);
 			//auto pixelC = Project(vertexC, transformMatrix);
+			vertexA.viewCoordinates = pVec4f2Vec3f(TransformCoordinate(vertexA.coordinates.xyz1(), mvMatrix));
+			vertexB.viewCoordinates = pVec4f2Vec3f(TransformCoordinate(vertexB.coordinates.xyz1(), mvMatrix));
+			vertexC.viewCoordinates = pVec4f2Vec3f(TransformCoordinate(vertexC.coordinates.xyz1(), mvMatrix));
+			
 			vertexA.coordinates = Project(vertexA.coordinates, transformMatrix);
 			vertexB.coordinates = Project(vertexB.coordinates, transformMatrix);
 			vertexC.coordinates = Project(vertexC.coordinates, transformMatrix);
+
+			
 			//float color = 0.4f + (pixelA.z + pixelB.z + pixelC.z + 15.f) / 6.f;
 			float color = 0.4f + (vertexA.coordinates.z + vertexB.coordinates.z + vertexC.coordinates.z + 15.f) / 6.f;
 			faceIndex++;
