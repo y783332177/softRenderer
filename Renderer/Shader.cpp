@@ -15,10 +15,10 @@ Color Shader::FragmentShader()
 	Vector3f lightIntensity = light.GetIntensity();
 	Vector3f eyePos = vector_normalize(viewPos - Vector3f(0, 0, 0));
 	Vector3f h = (l + eyePos) / vector_length_square(l + eyePos);
-	float ka = 0.f, kd = 0.64f, ks = 0.5f;
+	float ka = 0.f, kd = 1.f, ks = 0.7f;
 	float r = vector_length_square(l);
 	int p = 1;
-	float la = 0.4f;
+	float la = 0.2f;
 	normal = vector_normalize(normal);
 	float ld = kd * std::max(0.f, vector_dot(normal, l));
 	float ls = ks * (float)std::pow(std::max(0.f, vector_dot(normal, h)), p);

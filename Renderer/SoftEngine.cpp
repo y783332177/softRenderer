@@ -227,10 +227,22 @@ void Device::Clear(char r, char g, char b, char a)
 {
 	for (int index = 0; index < backBufferSize; index += 4)
 	{
-		backBuffer[index] = r;
-		backBuffer[index + 1] = g;
-		backBuffer[index + 2] = b;
-		backBuffer[index + 3] = a;
+		float y = index / 4 / bmp.GetWidth();
+		if (y > bmp.GetHeight() / 2)
+		{
+			float dy = 1 - (bmp.GetHeight() - y) / bmp.GetHeight();
+			backBuffer[index] = 235 * dy;
+			backBuffer[index + 1] = 206 * dy;
+			backBuffer[index + 2] = 135 * dy;
+		}
+		else
+		{
+			float dy = 1 - (bmp.GetHeight() - y) / bmp.GetHeight();
+			backBuffer[index] = 235 * dy;
+			backBuffer[index + 1] = 206 * dy;
+			backBuffer[index + 2] = 135 * dy;
+		}
+		backBuffer[index + 3] = 255;
 	}
 	for (int index = 0; index < zBufferSize; index++)
 	{
