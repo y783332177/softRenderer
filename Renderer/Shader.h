@@ -32,7 +32,7 @@ public:
 	Image* normalImage;
 };
 
-class FlatShader : public Shader
+class FlatShader : Shader
 {
 public:
 	FlatShader();

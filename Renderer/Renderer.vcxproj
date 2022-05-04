@@ -143,6 +143,7 @@
     <ClInclude Include="DrawController.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="SoftEngine.h" />
     <ClInclude Include="VectorNT.h" />
     <ClInclude Include="Window.h" />
@@ -152,6 +153,7 @@
     <ClCompile Include="DrawController.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SoftEngine.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>

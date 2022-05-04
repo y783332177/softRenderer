@@ -323,10 +323,10 @@ void Device::ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, V
 	float z1 = Interpolate(p0.z, p1.z, gradient1);
 	float z2 = Interpolate(p2.z, p3.z, gradient2);
 
-	/*float su = Interpolate(tCoord0.u, tCoord1.u, gradient1);
+	float su = Interpolate(tCoord0.u, tCoord1.u, gradient1);
 	float eu = Interpolate(tCoord2.u, tCoord3.u, gradient2);
 	float sv = Interpolate(tCoord0.v, tCoord1.v, gradient1);
-	float ev = Interpolate(tCoord2.v, tCoord3.v, gradient2);*/
+	float ev = Interpolate(tCoord2.v, tCoord3.v, gradient2);
 	float decent = (float)(ex - sx);
 	for (int x = sx; x < ex; x++)
 	{
@@ -337,16 +337,16 @@ void Device::ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, V
 		Vector3f trig[3] = { tri[0].coordinates, tri[1].coordinates, tri[2].coordinates };
 		Vector3f barycentricCoord = computeBarycentric2D(x, y, trig);
 		Vector2f uvCoord = Interpolate(barycentricCoord, tri[0].tCoordinates, tri[1].tCoordinates, tri[2].tCoordinates);
-		//Vector3f normal = Interpolate(barycentricCoord, tri[0].normal, tri[1].normal, tri[2].normal);
-		//Vector3f viewPos = Interpolate(barycentricCoord, tri[0].viewCoordinates, tri[1].viewCoordinates, tri[2].viewCoordinates);
+		Vector3f normal = Interpolate(barycentricCoord, tri[0].normal, tri[1].normal, tri[2].normal);
+		Vector3f viewPos = Interpolate(barycentricCoord, tri[0].viewCoordinates, tri[1].viewCoordinates, tri[2].viewCoordinates);
 		shader->color = color;
 		
 		//float u = Interpolate(su, eu, gradient);
 		//float v = Interpolate(sv, ev, gradient);
 		//shader->uvCoord = { u,v };
 		shader->uvCoord = uvCoord;
-		//shader->normal = normal;
-		//shader->viewPos = viewPos;
+		shader->normal = normal;
+		shader->viewPos = viewPos;
 		Color _color = shader->FragmentShader();
 		DrawPoint(Vector3f(x, y, z), Color(_color.r, _color.g, _color.b));
 		
