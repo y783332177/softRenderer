@@ -38,7 +38,8 @@ Mesh::Mesh()
 	vertices = std::vector<Vector3f>(0);
 	SetPosition(Vector3f(0., 0., 0.));
 	SetRotation(Vector3f(0., 0., 0.));
-	shader = std::make_shared<Shader>();
+	//shader = std::make_shared<Shader>();
+	shader = nullptr;
 }
 
 Mesh::Mesh(const std::string& _name, int verticesCount)
@@ -62,7 +63,8 @@ Mesh::Mesh(const std::string& _name, const std::string& objFile, Shader* const _
 {
 	SetPosition(Vector3f(0., 0., 0.));
 	SetRotation(Vector3f(0., 0., 0.));
-	shader.reset(_shader);
+	//shader.reset(_shader);
+	shader = _shader;
 	LoadObjFile(objFile);
 }
 
@@ -105,7 +107,7 @@ void Mesh::SetFaces(int index, const Face& face)
 	faces[index] = face;
 }
 
-void Mesh::SetTexture(const Image _texture)
+void Mesh::SetTexture(Image *_texture)
 {
 	texture = _texture;
 }
@@ -314,7 +316,7 @@ void Device::DrawLine(Vector2f point0, Vector2f point1, float z0, float z1, Colo
 	line.LineToOptimization(*this, point0, point1);
 }
 
-void Device::ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, Vertex& v3, Vertex tri[], Color& color, std::shared_ptr<Shader>& shader)
+void Device::ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, Vertex& v3, Vertex tri[], Color& color, /*std::shared_ptr<Shader>& shader*/Shader* shader)
 {
 	Vector3f p0 = v0.coordinates;
 	Vector3f p1 = v1.coordinates;
@@ -335,19 +337,51 @@ void Device::ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, V
 	float z1 = Interpolate(p0.z, p1.z, gradient1);
 	float z2 = Interpolate(p2.z, p3.z, gradient2);
 
-	float su = Interpolate(tCoord0.u, tCoord1.u, gradient1);
+	/*float su = Interpolate(tCoord0.u, tCoord1.u, gradient1);
 	float eu = Interpolate(tCoord2.u, tCoord3.u, gradient2);
 	float sv = Interpolate(tCoord0.v, tCoord1.v, gradient1);
 	float ev = Interpolate(tCoord2.v, tCoord3.v, gradient2);
-	float decent = (float)(ex - sx);
+	float decent = (float)(ex - sx);*/
+	//int width = bmp.GetWidth();
 	for (int x = sx; x < ex; x++)
 	{
-		float gradient = (x - sx) / decent;
+		if (x < 0 || y < 0 || x >= bmp.GetWidth() || y >= bmp.GetHeight())
+		{
+			continue;
+		}
+		/*float gradient = (x - sx) / decent;
 		float z = Interpolate(z1, z2, gradient);
+		
+		{
+			int zOffset = x + y * bmp.GetWidth();
+			if (zBuffer[zOffset] > z)
+			{
+				//std::cout << x << " " << y << " " << z << " " << zBuffer[zOffset] << std::endl;
+				continue;
+			}
+		}*/
 
 		//Vector3f barycentricCoord = barycentric(tri[0].coordinates, tri[1].coordinates, tri[2].coordinates, { x + 0.5f, y + 0.5f, z });
 		Vector3f trig[3] = { tri[0].coordinates, tri[1].coordinates, tri[2].coordinates };
 		Vector3f barycentricCoord = computeBarycentric2D(x, y, trig);
+
+		//float Z = 1.0 / (barycentricCoord[0] / tri[0].proCoordinates[3] + barycentricCoord[1] / tri[1].proCoordinates[3] + barycentricCoord[2] / tri[2].proCoordinates[3]);
+		float z = barycentricCoord[0] * tri[0].coordinates[2] + barycentricCoord[1] * tri[1].coordinates[2] + barycentricCoord[2] * tri[2].coordinates[2];
+		//z *= Z;
+
+		{
+			int zOffset = x + y * bmp.GetWidth();
+			if (zBuffer[zOffset] > z)
+			{
+				//std::cout << x << " " << y << " " << z << " " << zBuffer[zOffset] << std::endl;
+				continue;
+			}
+		}
+
+		barycentricCoord[0] = barycentricCoord[0] * tri[0].coordinates[2] / tri[0].proCoordinates[2];
+		barycentricCoord[1] = barycentricCoord[1] * tri[1].coordinates[2] / tri[1].proCoordinates[2];
+		barycentricCoord[2] = barycentricCoord[2] * tri[2].coordinates[2] / tri[2].proCoordinates[2];
+
 		Vector2f uvCoord = Interpolate(barycentricCoord, tri[0].tCoordinates, tri[1].tCoordinates, tri[2].tCoordinates);
 		Vector3f normal = Interpolate(barycentricCoord, tri[0].normal, tri[1].normal, tri[2].normal);
 		Vector3f viewPos = Interpolate(barycentricCoord, tri[0].viewCoordinates, tri[1].viewCoordinates, tri[2].viewCoordinates);
@@ -368,7 +402,7 @@ void Device::ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, V
 	}
 }
 
-void Device::DrawTriangle(Vertex v0, Vertex v1, Vertex v2, Color color, std::shared_ptr<Shader>& shader)
+void Device::DrawTriangle(Vertex v0, Vertex v1, Vertex v2, Color& color, /*std::shared_ptr<Shader>& shader*/ Shader* shader)
 {
 	Vertex triangle[3] = { v0, v1, v2 };
 	if (v0.coordinates.y > v1.coordinates.y)
@@ -449,7 +483,7 @@ inline bool CheckFace(Face face)
 	return true;
 }
 
-void Device::Render(Camera camera, std::vector<Mesh*>& meshes)
+void Device::Render(Camera& camera, std::vector<Mesh*>& meshes)
 {
 	// MVP matrix first
 	viewMatrix = LookAtRH(camera.GetPosition(), camera.GetTarget(), Vector3f(0.0f, 1.0f, 0.0f));
@@ -457,18 +491,19 @@ void Device::Render(Camera camera, std::vector<Mesh*>& meshes)
 
 	for (Mesh* mesh : meshes)
 	{
-		Image& texture = mesh->GetTexture();
+		Image* texture = mesh->GetTexture();
 		auto meshRotation = mesh->GetRotation();
-		worldMatrix =  RotationPitch(meshRotation[0]) * RotationYaw(meshRotation[1]) * RotationRoll(meshRotation[2]) * Translation(mesh->GetPosition());
+		worldMatrix = /*Translation(mesh->GetPosition()) * */RotationPitch(meshRotation[0]) * RotationYaw(meshRotation[1]) * RotationRoll(meshRotation[2]) * Translation(mesh->GetPosition());
 		mvp = projectionMatrix * viewMatrix * worldMatrix;
 		auto mvMatrix = viewMatrix * worldMatrix;
 		
 		std::vector<Vector3f> vertices = mesh->GetVertices();
 		int facesLength = mesh->GetFaces().size();
 		int faceIndex = 0;
+		mesh->shader->texture = mesh->GetTexture();
+		Color color(1.f, 1.f, 1.f);
 		for (auto& face : mesh->GetFaces())
 		{
-			mesh->shader->texture = &mesh->GetTexture();
 			CheckFace(face);
 			Vertex vertexA, vertexB, vertexC;
 			vertexA.worldCoordinates = vertices[face.A], vertexA.tCoordinates = face.tCoordinates[0], vertexA.normal = face.normal[0];
@@ -479,9 +514,13 @@ void Device::Render(Camera camera, std::vector<Mesh*>& meshes)
 			vertexB.viewCoordinates = PVec4f2Vec3f(TransformCoordinate(vertexB.coordinates.xyz1(), mvMatrix));
 			vertexC.viewCoordinates = PVec4f2Vec3f(TransformCoordinate(vertexC.coordinates.xyz1(), mvMatrix));
 			
-			vertexA.coordinates = GetScreenCrood(mesh->shader->VertexShader(vertexA.worldCoordinates));
-			vertexB.coordinates = GetScreenCrood(mesh->shader->VertexShader(vertexB.worldCoordinates));
-			vertexC.coordinates = GetScreenCrood(mesh->shader->VertexShader(vertexC.worldCoordinates));
+			vertexA.proCoordinates = mesh->shader->VertexShader(vertexA.worldCoordinates);
+			vertexB.proCoordinates = mesh->shader->VertexShader(vertexB.worldCoordinates);
+			vertexC.proCoordinates = mesh->shader->VertexShader(vertexC.worldCoordinates);
+
+			vertexA.coordinates = GetScreenCrood(vertexA.proCoordinates);
+			vertexB.coordinates = GetScreenCrood(vertexB.proCoordinates);
+			vertexC.coordinates = GetScreenCrood(vertexC.proCoordinates);
 			//vertexA.coordinates = Project(vertexA.worldCoordinates, mvp);
 			//vertexB.coordinates = Project(vertexB.worldCoordinates, mvp);
 			//vertexC.coordinates = Project(vertexC.worldCoordinates, mvp);
@@ -492,7 +531,7 @@ void Device::Render(Camera camera, std::vector<Mesh*>& meshes)
 			//CTriangle::DrawTriangleBox(*this, pixelA, pixelB, pixelC, Color(color, color, color));
 			//DrawTriangle(pixelA, pixelB, pixelC, Color(1.f, 0, 0));
 			//DrawTriangle(pixelA, pixelB, pixelC, Color(color, color, color), texture);
-			DrawTriangle(vertexA, vertexB, vertexC, Color(1.f, 1.f, 1.f), mesh->shader);
+			DrawTriangle(vertexA, vertexB, vertexC, color, mesh->shader);
 		}
 	}
 }

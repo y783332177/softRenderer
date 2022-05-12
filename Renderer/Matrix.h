@@ -291,7 +291,7 @@ typedef Matrix<4, 3, float> Mat4x3f;
 typedef Matrix<3, 4, float> Mat3x4f;
 
 
-inline Mat4x4f LookAtRH(Vector3f cameraPos, Vector3f cameraTar, Vector3f upVec)
+inline Mat4x4f LookAtRH(const Vector3f& cameraPos, const Vector3f& cameraTar, const Vector3f& upVec)
 {
 	//Vector3f cameraDir = vector_normalize(cameraTar - cameraPos);
 	//Vector3f cameraRight = vector_normalize(vector_cross(cameraDir, upVec));

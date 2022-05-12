@@ -15,14 +15,14 @@ int main()
 	const int width = 640;
 	const int height = 480;
 	Image image(width, height);
-	Image texture;
-	//texture.Read("default.bmp");
-	texture.Read("african_head_diffuse.bmp");
-	texture.Export("image.bmp");
+	Image *texture = new Image();
+	//texture->Read("default.bmp");
+	texture->Read("african_head_diffuse.bmp");
+	texture->Export("image.bmp");
 	Device d(image);
-	//Mesh mesh("Cube", "cube.obj");
-	//Mesh mesh("bunny", "bunny.obj");
 	Shader* shader = new Shader();
+	//Mesh mesh("Cube", "cube.obj", shader);
+	//Mesh mesh("bunny", "bunny.obj");
 	Mesh mesh("head", "head.obj", shader);
 	mesh.SetTexture(texture);
 	mesh.SetPosition(Vector3f(0., 0., 0.));
@@ -51,7 +51,7 @@ int main()
 
 		d.Clear(0, 0, 0, 255);
 		auto r = mesh.GetRotation();
-		mesh.SetRotation(Vector3f(r.x + 0.01f, r.y + 0.01f, r.z));
+		mesh.SetRotation(Vector3f(r.x + 0.00f, r.y + 0.01f, r.z));
 		d.Render(camera, meshes);
 
 		if (!pWindow->ProcessMessages())
@@ -75,6 +75,8 @@ int main()
 		//Sleep(10000);
 	}
 
+	delete shader;
+	delete texture;
 	delete pWindow;
 	return 0;
 }

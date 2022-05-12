@@ -23,7 +23,9 @@ Color Shader::FragmentShader()
 	float ld = kd * std::max(0.f, vector_dot(normal, l));
 	float ls = ks * (float)std::pow(std::max(0.f, vector_dot(normal, h)), p);
 	float L = la + ld + ls;
-	Color textureColor = texture->GetColor(uvCoord.u, uvCoord.v);
+	Color textureColor(1.0f, 1.0f, 1.0f);
+	if(texture != nullptr)
+		 textureColor = texture->GetColor(uvCoord.u, uvCoord.v);
 	//Color textureColor = { 1.f,1.f,1.f };
 	//return Color(color.r * textureColor.r, color.g * textureColor.g, color.b * textureColor.b);
 	return Color(color.r * L * textureColor.r, color.g * L * textureColor.g, color.b * L * textureColor.b);

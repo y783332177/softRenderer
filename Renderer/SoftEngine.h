@@ -39,6 +39,7 @@ struct Vertex
 	Vector3f coordinates;
 	Vector3f worldCoordinates;
 	Vector3f viewCoordinates;
+	Vector4f proCoordinates;
 	Vector2f tCoordinates;
 };
 
@@ -108,15 +109,15 @@ public:
 	const std::vector<Vector3f>& GetVertices() const { return vertices; };
 	Face GetFace(int index) const;
 	const std::vector<Face>& GetFaces() const { return faces; };
-	Image& GetTexture() { return texture; };
-	Image& GetNormal() { return normal; };
+	Image* GetTexture() { return texture; };
+	Image GetNormal() { return normal; };
 
 	void SetName(const std::string& _name) { name = _name; };
 	void SetPosition(const Vector3f& _position) { position = _position; };
 	void SetRotation(const Vector3f& _rotation) { rotation = _rotation; };
 	void SetVertices(int index, const Vector3f& vertice);
 	void SetFaces(int index, const Face& face);
-	void SetTexture(const Image _texture);
+	void SetTexture(Image *_texture);
 	void SetNormal(const Image _normal);
 
 	void InsertVertice(const Vector3f& vertice);
@@ -124,9 +125,10 @@ public:
 
 	void LoadObjFile(const std::string filename);
 	~Mesh();
-	std::shared_ptr<Shader>shader;
+	//std::shared_ptr<Shader>shader;
+	Shader* shader;
 private:
-	Image texture;
+	Image *texture;
 	Image normal;
 	std::string name;
 	std::vector<Vector3f> vertices;
@@ -147,10 +149,10 @@ public:
 	void DrawPoint(Vector3f point, Color color = Color(1.0f, 1.0f, 1.0f));
 	void DrawLine(Vector2i point0, Vector2i point1, float z0, float z1, Color color = Color(1.0f, 1.0f, 1.0f));
 	void DrawLine(Vector2f point0, Vector2f point1, float z0, float z1, Color color = Color(1.0f, 1.0f, 1.0f));
-	void ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, Vertex& v3, Vertex tri[], Color& color, std::shared_ptr<Shader>& shader);
+	void ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, Vertex& v3, Vertex tri[], Color& color, /*std::shared_ptr<Shader>& shader*/Shader* shader);
 	//void DrawTriangle(Vector3f _p0, Vector3f _p1, Vector3f _p2, Color color, Image &texture);
-	void DrawTriangle(Vertex v0, Vertex v1, Vertex v2, Color color, std::shared_ptr<Shader> &shader);
-	void Render(Camera camera, std::vector<Mesh*>& meshes);
+	void DrawTriangle(Vertex v0, Vertex v1, Vertex v2, Color &color, /*std::shared_ptr<Shader>& shader*/ Shader* shader);
+	void Render(Camera &camera, std::vector<Mesh*>& meshes);
 	int GetWidth() { return bmp.GetWidth(); };
 	int GetHeight() { return bmp.GetHeight(); };
 	char* GetBackBuffer();
