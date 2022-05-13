@@ -16,7 +16,7 @@ Color Shader::FragmentShader()
 	Vector3f eyePos = vector_normalize(viewPos - Vector3f(0, 0, 0));
 	Vector3f h = (l + eyePos) / vector_length_square(l + eyePos);
 	float ka = 0.f, kd = 1.f, ks = 0.7f;
-	float r = vector_length_square(l);
+	//float r = vector_length_square(l);
 	int p = 1;
 	float la = 0.2f;
 	normal = vector_normalize(normal);

@@ -262,11 +262,11 @@ void Device::PutPixel(int x, int y, float z,Color color)
 {
 	//int zOffset = (x + (bmp.GetHeight() - 1 - y) * bmp.GetWidth());
 	int zOffset = x + y * bmp.GetWidth();
-	if (zBuffer[zOffset] > z)
+	/*if (zBuffer[zOffset] > z)
 	{
 		//std::cout << x << " " << y << " " << z << " " << zBuffer[zOffset] << std::endl;
 		return;
-	}
+	}*/
 		
 
 	int offset = zOffset * 4;
@@ -295,11 +295,12 @@ Vector3f Device::GetScreenCrood(const Vector4f& point)
 
 void Device::DrawPoint(Vector3f point, Color color)
 {
-	if (point.x >= 0 && point.y >= 0 && point.x < bmp.GetWidth() && point.y < bmp.GetHeight())
+	/*if (point.x >= 0 && point.y >= 0 && point.x < bmp.GetWidth() && point.y < bmp.GetHeight())
 	{
 		PutPixel(RoundF2I(point.x), RoundF2I(point.y), point.z, color);
 		//PutPixel(point.x, point.y, point.z, color);
-	}
+	}*/
+	PutPixel(RoundF2I(point.x), RoundF2I(point.y), point.z, color);
 }
 
 void Device::DrawLine(Vector2i point0, Vector2i point1, float z0, float z1, Color color)
@@ -364,10 +365,13 @@ void Device::ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, V
 		//Vector3f barycentricCoord = barycentric(tri[0].coordinates, tri[1].coordinates, tri[2].coordinates, { x + 0.5f, y + 0.5f, z });
 		Vector3f trig[3] = { tri[0].coordinates, tri[1].coordinates, tri[2].coordinates };
 		Vector3f barycentricCoord = computeBarycentric2D(x, y, trig);
+		
+		float Z = 1.0 / (barycentricCoord[0] / tri[0].proCoordinates[3] + barycentricCoord[1] / tri[1].proCoordinates[3] + barycentricCoord[2] / tri[2].proCoordinates[3]);
+		float z = barycentricCoord[0] * tri[0].coordinates[2] / tri[0].proCoordinates[3] + barycentricCoord[1] * tri[1].coordinates[2] / tri[1].proCoordinates[3] + barycentricCoord[2] * tri[2].coordinates[2] / tri[2].proCoordinates[3];
+		//float z = 1 / (barycentricCoord[0] / tri[0].proCoordinates[2] * tri[0].proCoordinates[3] + barycentricCoord[1] / tri[1].proCoordinates[2] * tri[1].proCoordinates[3] + barycentricCoord[2] / tri[2].proCoordinates[2] * tri[2].proCoordinates[3]);
+		z *= Z;
 
-		//float Z = 1.0 / (barycentricCoord[0] / tri[0].proCoordinates[3] + barycentricCoord[1] / tri[1].proCoordinates[3] + barycentricCoord[2] / tri[2].proCoordinates[3]);
-		float z = barycentricCoord[0] * tri[0].coordinates[2] + barycentricCoord[1] * tri[1].coordinates[2] + barycentricCoord[2] * tri[2].coordinates[2];
-		//z *= Z;
+		//float z = 1 / (barycentricCoord[0] / tri[0].proCoordinates[2] + barycentricCoord[1] / tri[1].proCoordinates[2] + barycentricCoord[2] / tri[2].proCoordinates[2]);
 
 		{
 			int zOffset = x + y * bmp.GetWidth();
@@ -376,11 +380,12 @@ void Device::ProcessScanLine(const int& y, Vertex& v0, Vertex& v1, Vertex& v2, V
 				//std::cout << x << " " << y << " " << z << " " << zBuffer[zOffset] << std::endl;
 				continue;
 			}
+			zBuffer[zOffset] = z;
 		}
 
-		barycentricCoord[0] = barycentricCoord[0] * tri[0].coordinates[2] / tri[0].proCoordinates[2];
-		barycentricCoord[1] = barycentricCoord[1] * tri[1].coordinates[2] / tri[1].proCoordinates[2];
-		barycentricCoord[2] = barycentricCoord[2] * tri[2].coordinates[2] / tri[2].proCoordinates[2];
+		barycentricCoord[0] = barycentricCoord[0] * z / tri[0].proCoordinates[2];
+		barycentricCoord[1] = barycentricCoord[1] * z / tri[1].proCoordinates[2];
+		barycentricCoord[2] = barycentricCoord[2] * z / tri[2].proCoordinates[2];
 
 		Vector2f uvCoord = Interpolate(barycentricCoord, tri[0].tCoordinates, tri[1].tCoordinates, tri[2].tCoordinates);
 		Vector3f normal = Interpolate(barycentricCoord, tri[0].normal, tri[1].normal, tri[2].normal);
@@ -493,7 +498,7 @@ void Device::Render(Camera& camera, std::vector<Mesh*>& meshes)
 	{
 		Image* texture = mesh->GetTexture();
 		auto meshRotation = mesh->GetRotation();
-		worldMatrix = /*Translation(mesh->GetPosition()) * */RotationPitch(meshRotation[0]) * RotationYaw(meshRotation[1]) * RotationRoll(meshRotation[2]) * Translation(mesh->GetPosition());
+		worldMatrix = Translation(mesh->GetPosition()) * RotationPitch(meshRotation[0]) * RotationYaw(meshRotation[1]) * RotationRoll(meshRotation[2]); //* Translation(mesh->GetPosition());
 		mvp = projectionMatrix * viewMatrix * worldMatrix;
 		auto mvMatrix = viewMatrix * worldMatrix;
 		
